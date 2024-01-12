@@ -39,9 +39,10 @@ export class WEQ8UIElement extends LitElement {
   .filters thead {
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 60px 60px 50px 40px;
+    grid-template-columns: 60px 60px 60px 60px;
     align-items: center;
-    gap: 4px;
+    gap: 120px;
+    margin-left: 70px;
   }
   .filters thead th {
     display: grid;
@@ -50,17 +51,21 @@ export class WEQ8UIElement extends LitElement {
     border-radius: 10px;
     font-weight: var(--font-weight);
     border: 5px solid #373737;
+    
   }
+  
+
   .filters thead th.headerFilter {
     text-align: left;
     padding-left: 9px;
     border: 5px solide #373737;
   }
+
   .visualisation {
     flex: 1;
     position: relative;
     border: 1px solid #373737;
-    min-height:300px;
+    min-height:350px;
      
    
   }
