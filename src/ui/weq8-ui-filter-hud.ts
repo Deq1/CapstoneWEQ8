@@ -87,6 +87,7 @@ export class EQUIFilterHUDElement extends LitElement {
       }
       .gainInput {
         width: 26px;
+       
       }
       .qInput {
         width: 30px;

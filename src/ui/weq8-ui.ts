@@ -13,106 +13,109 @@ import "./weq8-ui-filter-hud";
 
 @customElement("weq8-ui")
 export class WEQ8UIElement extends LitElement {
-  static styles = [
-    sharedStyles,
-    css`
-      :host {
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-        gap: 10px;
-        min-width: 600px;
-        min-height: 200px;
-        padding: 20px;
-        border-radius: 8px;
-        overflow: visible;
-        background: #202020;
-        border: 1px solid #373737;
-      }
-      .filters {
-        display: inline-grid;
-        grid-auto-flow: row;
-        gap: 4px;
-      }
-      .filters tbody,
-      .filters tr {
-        display: contents;
-      }
-      .filters thead {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-columns: 60px 60px 50px 40px;
-        align-items: center;
-        gap: 4px;
-      }
-      .filters thead th {
-        display: grid;
-        place-content: center;
-        height: 20px;
-        border-radius: 10px;
-        font-weight: var(--font-weight);
-        border: 1px solid #373737;
-      }
-      .filters thead th.headerFilter {
-        text-align: left;
-        padding-left: 18px;
-        border: none;
-      }
-      .visualisation {
-        flex: 1;
-        position: relative;
-        border: 1px solid #373737;
-      }
-      canvas,
-      svg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-      svg {
-        overflow: visible;
-      }
-      .grid-x,
-      .grid-y {
-        stroke: #333;
-        stroke-width: 1;
-        vector-effect: non-scaling-stroke;
-      }
-      .filter-handle-positioner {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 30px;
-        height: 30px;
-        touch-action: none;
-      }
-      .filter-handle {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background-color: #fff;
-        color: black;
-        transform: translate(-50%, -50%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        user-select: none;
-        cursor: grab;
-        transition: background-color 0.15s ease;
-      }
-      .filter-handle.selected {
-        background: #ffcc00;
-      }
-      .filter-handle.bypassed {
-        background: #7d7d7d;
-      }
-    `,
+  static styles = [sharedStyles, css`:host {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 20px;
+    min-width: 200px;
+    min-height: 200px;
+    padding: 20px;
+    border-radius: 8px;
+    overflow: visible;
+    background: #202020;
+    border: 1px solid #373737;
+  }
+  .filters {
+    display: inline-grid;
+    grid-auto-flow: row;
+    gap: 10px;
+  }
+  .filters tbody,
+  .filters tr {
+    display: contents;
+  }
+  .filters thead {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 60px 60px 50px 40px;
+    align-items: center;
+    gap: 4px;
+  }
+  .filters thead th {
+    display: grid;
+    place-content: center;
+    height: 20px;
+    border-radius: 10px;
+    font-weight: var(--font-weight);
+    border: 5px solid #373737;
+  }
+  .filters thead th.headerFilter {
+    text-align: left;
+    padding-left: 9px;
+    border: 5px solide #373737;
+  }
+  .visualisation {
+    flex: 1;
+    position: relative;
+    border: 1px solid #373737;
+  }
+  canvas,
+  svg {
+    position: absolute;
+    top: 1;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  svg {
+    overflow: visible;
+  }
+  .grid-x,
+  .grid-y {
+    stroke: #333;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .filter-handle-positioner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 100px;
+    touch-action: none;
+  }
+  .filter-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #fff;
+    color: black;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    cursor: grab;
+    transition: background-color 0.15s ease;
+  }
+  .filter-handle.selected {
+    background: #ff;
+  }
+  .filter-handle.bypassed {
+    background: #7d6d7d;
+  }` ,
   ];
+
+
+
+
+
+
+
 
   constructor() {
     super();
