@@ -35,7 +35,7 @@ export class EQUIFilterHUDElement extends LitElement {
         grid-template-columns: 60px 60px 50px 40px;
         align-items: center;
         gap: 4px;
-        background-color: black;
+        background-color: #a9a9a9;
         border-radius: 22px;
       }
       input,

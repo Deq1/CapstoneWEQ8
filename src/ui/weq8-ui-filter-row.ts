@@ -30,12 +30,12 @@ export class EQUIFilterRowElement extends LitElement {
       :host {
         display: grid;
         grid-auto-flow: column;
-        grid-template-columns: 60px 60px 50px 40px;
+        grid-template-columns: 60px 50spx 60px 60px;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
         background-color: transparent;
         border-radius: 22px;
-        transition: background-color 0.15s ease;
+        transition: background-color 0.15s  ease;
       }
       :host(.selected) {
         background-color: #373737;

@@ -15,21 +15,22 @@ import "./weq8-ui-filter-hud";
 export class WEQ8UIElement extends LitElement {
   static styles = [sharedStyles, css`:host {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    height: 100 %;
     align-items: stretch;
-    gap: 20px;
+    gap: 10px;
     min-width: 200px;
     min-height: 200px;
     padding: 20px;
     border-radius: 8px;
     overflow: visible;
     background: #202020;
-    border: 1px solid #373737;
+    border: 5px solid #a584e8 ;
   }
   .filters {
     display: inline-grid;
     grid-auto-flow: row;
-    gap: 10px;
+    gap: 20px;
   }
   .filters tbody,
   .filters tr {
@@ -59,6 +60,9 @@ export class WEQ8UIElement extends LitElement {
     flex: 1;
     position: relative;
     border: 1px solid #373737;
+    min-height:300px;
+     
+   
   }
   canvas,
   svg {
@@ -74,12 +78,12 @@ export class WEQ8UIElement extends LitElement {
   .grid-x,
   .grid-y {
     stroke: #333;
-    stroke-width: 1;
+    stroke-width: 2;
     vector-effect: non-scaling-stroke;
   }
   .filter-handle-positioner {
     position: absolute;
-    top: 0;
+    top: 0px;
     left: 0;
     width: 50px;
     height: 100px;
@@ -103,10 +107,10 @@ export class WEQ8UIElement extends LitElement {
     transition: background-color 0.15s ease;
   }
   .filter-handle.selected {
-    background: #ff;
+    background: #ffffff;
   }
   .filter-handle.bypassed {
-    background: #7d6d7d;
+    background: #696969;
   }` ,
   ];
 
@@ -195,18 +199,47 @@ export class WEQ8UIElement extends LitElement {
     }
   }
 
+  // render() {
+  //   return html`
+  //     ${this.view === "allBands" ? this.renderTable() : null}
+  //     <div class="visualisation">
+  //       <svg
+  //         viewBox="0 0 100 10"
+  //         preserveAspectRatio="none"
+  //         xmlns="http://www.w3.org/2000/svg"
+  //       >
+  //         ${this.gridXs.map(this.renderGridX)}
+  //         ${[12, 6, 0, -6, -12].map(this.renderGridY)}
+  //       </svg>
+  //       <canvas class="analyser"></canvas>
+  //       <canvas
+  //         class="frequencyResponse"
+  //         @click=${() => (this.selectedFilterIdx = -1)}
+  //       ></canvas>
+  //       ${this.runtime?.spec.map((s, i) =>
+  //         s.type === "noop" ? undefined : this.renderFilterHandle(s, i)
+  //       )}
+  //       ${this.view === "hud" && this.selectedFilterIdx !== -1
+  //         ? this.renderFilterHUD()
+  //         : null}
+  //     </div>
+  //   `;
+  // }
+
+
   render() {
     return html`
-      ${this.view === "allBands" ? this.renderTable() : null}
+   
       <div class="visualisation">
         <svg
           viewBox="0 0 100 10"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
         >
+       
           ${this.gridXs.map(this.renderGridX)}
           ${[12, 6, 0, -6, -12].map(this.renderGridY)}
-        </svg>
+                  </svg>
         <canvas class="analyser"></canvas>
         <canvas
           class="frequencyResponse"
@@ -219,8 +252,13 @@ export class WEQ8UIElement extends LitElement {
           ? this.renderFilterHUD()
           : null}
       </div>
+      ${this.view === "allBands" ? this.renderTable() : null}
     `;
   }
+
+
+
+
 
   private renderTable() {
     return html` <table class="filters">
@@ -262,6 +300,9 @@ export class WEQ8UIElement extends LitElement {
     />`;
   }
 
+/*   Handles Grids */ 
+
+
   private renderGridX(x: number) {
     return svg`<line
       class="grid-x"
@@ -283,6 +324,12 @@ export class WEQ8UIElement extends LitElement {
       y2=${y}
     />`;
   }
+
+///////////////////////////////////////////
+
+
+
+  
 
   private renderFilterHandle(spec: WEQ8Filter, idx: number) {
     if (!this.runtime) return;
