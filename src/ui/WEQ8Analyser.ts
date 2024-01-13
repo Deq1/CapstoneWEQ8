@@ -64,10 +64,10 @@ export class WEQ8Analyser {
     }
     path.lineTo(w, h);
 
-    ctx.fillStyle = "rgba(128, 0, 128, 0.7)";
+    ctx.fillStyle = "rgb(255,255,255)";
     ctx.fill(path);
 
-    ctx.strokeStyle = "rgb(128, 0, 128)";
+    ctx.strokeStyle = "rgb(255,255,255)";
     ctx.stroke(path);
   }
 

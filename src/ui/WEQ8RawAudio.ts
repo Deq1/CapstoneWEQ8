@@ -69,10 +69,10 @@ export class WEQ8RawAudio {
       }
       path.lineTo(w, h);
   
-      ctx.fillStyle = "rgba(20, 100, 60, 0.7)";
+      ctx.fillStyle = "rgb(0, 0, 0)";
       ctx.fill(path);
   
-      ctx.strokeStyle = "rgb(155, 155, 255)";
+      ctx.strokeStyle = "rgb(0, 0, 0)";
       ctx.stroke(path);
     }
   

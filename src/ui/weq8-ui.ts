@@ -307,9 +307,9 @@ export class WEQ8UIElement extends LitElement {
           ${[12, 6, 0, -6, -12].map(this.renderGridY)}
                   </svg>
 
-
-        <canvas class= "analyser"></canvas>
         <canvas class= "RawAnalyser"></canvas>
+        <canvas class= "analyser"></canvas>
+        
 
         <canvas
           class="frequencyResponse"
