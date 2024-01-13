@@ -28,6 +28,14 @@ export class WEQ8Runtime {
     this.output.connect(node);
   }
 
+/*  get input Node */
+
+  connectInput(node: AudioNode): void{
+    this.input.connect(node);
+  }
+
+  /*     */
+  
   disconnect(node: AudioNode): void {
     this.output.disconnect(node);
   }
