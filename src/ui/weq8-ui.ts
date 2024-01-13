@@ -4,6 +4,7 @@ import { classMap } from "lit/directives/class-map.js";
 import { WEQ8Runtime } from "../runtime";
 import { WEQ8Filter } from "../spec";
 import { WEQ8Analyser } from "./WEQ8Analyser";
+import { WEQ8RawAudio } from "./WEQ8RawAudio";
 import { WEQ8FrequencyResponse } from "./WEQ8FrequencyResponse";
 import { sharedStyles } from "./styles";
 import { clamp, filterHasGain, toLin, toLog10 } from "../functions";
