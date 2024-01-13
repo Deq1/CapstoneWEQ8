@@ -27,6 +27,7 @@ export class WEQ8UIElement extends LitElement {
     background: #202020;
     border: 5px solid #a584e8 ;
   }
+
   .filters {
     display: inline-grid;
     grid-auto-flow: row;
@@ -35,31 +36,51 @@ export class WEQ8UIElement extends LitElement {
   .filters tbody,
   .filters tr {
     display: contents;
+  
   }
+
   .filters thead {
+   
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 60px 60px 60px 60px;
+    grid-template-columns:  60px 60px 60px 60px ;
     align-items: center;
-    gap: 120px;
-    margin-left: 70px;
+    gap: 60px;
+    transform:translateX(75px);
   }
+
+
+
   .filters thead th {
     display: grid;
     place-content: center;
     height: 20px;
-    border-radius: 10px;
+    border-radius: 20px;
     font-weight: var(--font-weight);
     border: 5px solid #373737;
-    
+    position: relative;
   }
-  
+  .filters thead th.headerFilter { 
+    position : relative;
+    left: 10px;
+  }
+  .filters thead th.headerFreq {
+    position : relative;
+    left: 10px;
+  }
+  .filters thead th.headerGain {
+    position: relative;
+    left: 20px;
 
-  .filters thead th.headerFilter {
-    text-align: left;
-    padding-left: 9px;
-    border: 5px solide #373737;
   }
+  .filters thead th.headerQ {
+    position: relative;
+    left: 30px;
+  }
+
+
+
+ 
 
   .visualisation {
     flex: 1;
@@ -266,14 +287,14 @@ export class WEQ8UIElement extends LitElement {
 
 
   private renderTable() {
-    return html` <table class="filters">
+    return html` <table  class="filters">
       <thead>
-        <tr>
-          <th class="headerFilter">Filter</th>
-          <th>Freq</th>
-          <th>Gain</th>
-          <th>Q</th>
-        </tr>
+          <tr>
+            <th class ="headerFilter">Filter</th>
+            <th class = "headerFreq">Freq</th>
+            <th class = "headerGain">Gain</th>
+            <th class = "headerQ">Q</th>
+         </tr>
       </thead>
       <tbody>
         ${Array.from({ length: 8 }).map(
