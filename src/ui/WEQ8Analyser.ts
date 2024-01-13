@@ -64,7 +64,7 @@ export class WEQ8Analyser {
     }
     path.lineTo(w, h);
 
-    ctx.fillStyle = "rgba(30, 30, 60, 0.7)";
+    ctx.fillStyle = "rgba(20, 100, 60, 0.7)";
     ctx.fill(path);
 
     ctx.strokeStyle = "rgb(155, 155, 255)";
