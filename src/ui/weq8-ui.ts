@@ -43,10 +43,10 @@ export class WEQ8UIElement extends LitElement {
    
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns:  60px 60px 60px 60px ;
+    grid-template-columns:  100px 100px 100px 100px ;
     align-items: center;
     gap: 60px;
-    transform:translateX(75px);
+    transform:translateX(60px);
   }
 
 
@@ -76,6 +76,7 @@ export class WEQ8UIElement extends LitElement {
   .filters thead th.headerQ {
     position: relative;
     left: 30px;
+  
   }
 
 
