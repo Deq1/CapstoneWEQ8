@@ -172,6 +172,15 @@ export class WEQ8UIElement extends LitElement {
   @state()
   private analyser?: WEQ8Analyser;
 
+
+  @state()
+  private RawAnalyser?: WEQ8RawAudio;
+
+
+  // switch to show Raw Audio Data or not //
+
+
+
   @state()
   private frequencyResponse?: WEQ8FrequencyResponse;
 
@@ -187,21 +196,39 @@ export class WEQ8UIElement extends LitElement {
   @query(".analyser")
   private analyserCanvas?: HTMLCanvasElement;
 
+  @query(".RawAnalyser")
+  private RawAnalyserCanvas?: HTMLCanvasElement;
+
   @query(".frequencyResponse")
   private frequencyResponseCanvas?: HTMLCanvasElement;
 
+
   updated(changedProperties: Map<string, unknown>) {
     if (changedProperties.has("runtime")) {
+
       this.analyser?.dispose();
+      this.RawAnalyser?.dispose();
       this.frequencyResponse?.dispose();
+
+
       if (this.runtime && this.analyserCanvas && this.frequencyResponseCanvas) {
+
+
         this.analyser = new WEQ8Analyser(this.runtime, this.analyserCanvas);
         this.analyser.analyse();
-        this.frequencyResponse = new WEQ8FrequencyResponse(
-          this.runtime,
-          this.frequencyResponseCanvas
-        );
+
+       
+        if(this.RawAnalyserCanvas){
+         
+          this.RawAnalyser = new WEQ8RawAudio(this.runtime, this.RawAnalyserCanvas);
+          this.RawAnalyser.analyse();
+        }
+
+
+        this.frequencyResponse = new WEQ8FrequencyResponse( this.runtime,this.frequencyResponseCanvas);
         this.frequencyResponse.render();
+
+
 
         let newGridXs: number[] = [];
         let nyquist = this.runtime.audioCtx.sampleRate / 2;
@@ -229,10 +256,14 @@ export class WEQ8UIElement extends LitElement {
         });
       }
     }
+
     if (changedProperties.has("view")) {
       this.requestUpdate(); // Request another update to set handle positions in new view flow
     }
   }
+
+  
+
 
   // render() {
   //   return html`
@@ -275,7 +306,11 @@ export class WEQ8UIElement extends LitElement {
           ${this.gridXs.map(this.renderGridX)}
           ${[12, 6, 0, -6, -12].map(this.renderGridY)}
                   </svg>
-        <canvas class="analyser"></canvas>
+
+
+        <canvas class= "analyser"></canvas>
+        <canvas class= "RawAnalyser"></canvas>
+
         <canvas
           class="frequencyResponse"
           @click=${() => (this.selectedFilterIdx = -1)}

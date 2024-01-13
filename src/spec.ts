@@ -37,8 +37,8 @@ export const FILTER_TYPES: FilterType[] = [
   "highshelf24",
   "peaking12",
   "peaking24",
-  // "notch12",
-  // "notch24",
+  "notch12",
+  "notch24",
 ];
 
 export type WEQ8Filter = {
