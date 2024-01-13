@@ -16,11 +16,11 @@ export class WEQ8UIElement extends LitElement {
   static styles = [sharedStyles, css`:host {
     display: flex;
     flex-direction: column;
-    height: 100 %;
+    height: 100%;
     align-items: stretch;
     gap: 10px;
-    min-width: 200px;
-    min-height: 200px;
+    min-width: 400px;
+    min-height: 600px;
     padding: 20px;
     border-radius: 8px;
     overflow: visible;
@@ -33,10 +33,17 @@ export class WEQ8UIElement extends LitElement {
     grid-auto-flow: row;
     gap: 20px;
   }
-  .filters tbody,
+
+  .filters tbody
+  {
+    display: contents;
+   
+ 
+  }
+
   .filters tr {
     display: contents;
-  
+    
   }
 
   .filters thead {
@@ -87,7 +94,7 @@ export class WEQ8UIElement extends LitElement {
     flex: 1;
     position: relative;
     border: 1px solid #373737;
-    min-height:350px;
+    min-height:400px;
      
    
   }
