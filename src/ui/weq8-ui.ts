@@ -181,11 +181,14 @@ export class WEQ8UIElement extends LitElement {
 
 
   // switch to show Raw Audio Data or not //
- @state()
- private showRawAudio =  true;
+ @property()
+ showRawAudio = true;
+
+
 
   toggleRawAudio() {
     this.showRawAudio = !this.showRawAudio;
+    this.requestUpdate();
   }
 
 
@@ -212,9 +215,9 @@ export class WEQ8UIElement extends LitElement {
 
 
   updated(changedProperties: Map<string, unknown>) {   
-    
-
-    if (changedProperties.has("runtime")) {
+  
+   
+    if (changedProperties.has("runtime") || changedProperties.has("showRawAudio")) {
 
       this.analyser?.dispose();
       this.RawAnalyser?.dispose();
@@ -223,26 +226,21 @@ export class WEQ8UIElement extends LitElement {
 
       if (this.runtime && this.analyserCanvas && this.frequencyResponseCanvas) {
 
-
+      console.log("called");
         this.analyser = new WEQ8Analyser(this.runtime, this.analyserCanvas);
         this.analyser.analyse();
 
        
-        // if(this.showRawAudio && this.RawAnalyserCanvas){
-         
-        //   this.RawAnalyser = new WEQ8RawAudio(this.runtime, this.RawAnalyserCanvas);
-        //   this.RawAnalyser.analyse();
-        // }
-
+    
         if (this.showRawAudio && this.RawAnalyserCanvas) {
           this.RawAnalyser = new WEQ8RawAudio(this.runtime, this.RawAnalyserCanvas);
           this.RawAnalyser.analyse();
-        } else {
-          // Handle any necessary cleanup when showRawAudio is false
-          // For example, you might want to dispose of RawAnalyser here
+          
+        }
+        else {
           this.RawAnalyser?.dispose();
-          // Ensure that RawAnalyser is null or undefined when not in use
           this.RawAnalyser = undefined;
+        
         }
   
 
@@ -276,13 +274,18 @@ export class WEQ8UIElement extends LitElement {
             (row as ReactiveElement).requestUpdate();
           }
         });
+
+
       }
     }
 
     if (changedProperties.has("view")) {
       this.requestUpdate(); // Request another update to set handle positions in new view flow
     }
+
+
   }
+  
 
   
 
@@ -304,7 +307,7 @@ export class WEQ8UIElement extends LitElement {
           ${[12, 6, 0, -6, -12].map(this.renderGridY)}
                   </svg>
 
-        <canvas class= "RawAnalyser"></canvas>
+      ${this.showRawAudio ? html`<canvas class="RawAnalyser"></canvas>` : ''}
         <canvas class= "analyser"></canvas>
         
 

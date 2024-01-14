@@ -4,6 +4,7 @@ import { getBiquadFilterOrder, getBiquadFilterType } from "./functions";
 
 interface WEQ8Events {
   filtersChanged: (spec: WEQ8Spec) => void;
+  
 }
 export class WEQ8Runtime {
   public readonly input: AudioNode;
