@@ -12,6 +12,9 @@ import { clamp, filterHasGain, toLin, toLog10 } from "../functions";
 import "./weq8-ui-filter-row";
 import "./weq8-ui-filter-hud";
 
+
+
+
 @customElement("weq8-ui")
 export class WEQ8UIElement extends LitElement {
   static styles = [sharedStyles, css`:host {
@@ -178,7 +181,12 @@ export class WEQ8UIElement extends LitElement {
 
 
   // switch to show Raw Audio Data or not //
+ @state()
+ private showRawAudio =  true;
 
+  toggleRawAudio() {
+    this.showRawAudio = !this.showRawAudio;
+  }
 
 
   @state()
@@ -203,7 +211,9 @@ export class WEQ8UIElement extends LitElement {
   private frequencyResponseCanvas?: HTMLCanvasElement;
 
 
-  updated(changedProperties: Map<string, unknown>) {
+  updated(changedProperties: Map<string, unknown>) {   
+    
+
     if (changedProperties.has("runtime")) {
 
       this.analyser?.dispose();
@@ -218,11 +228,23 @@ export class WEQ8UIElement extends LitElement {
         this.analyser.analyse();
 
        
-        if(this.RawAnalyserCanvas){
+        // if(this.showRawAudio && this.RawAnalyserCanvas){
          
+        //   this.RawAnalyser = new WEQ8RawAudio(this.runtime, this.RawAnalyserCanvas);
+        //   this.RawAnalyser.analyse();
+        // }
+
+        if (this.showRawAudio && this.RawAnalyserCanvas) {
           this.RawAnalyser = new WEQ8RawAudio(this.runtime, this.RawAnalyserCanvas);
           this.RawAnalyser.analyse();
+        } else {
+          // Handle any necessary cleanup when showRawAudio is false
+          // For example, you might want to dispose of RawAnalyser here
+          this.RawAnalyser?.dispose();
+          // Ensure that RawAnalyser is null or undefined when not in use
+          this.RawAnalyser = undefined;
         }
+  
 
 
         this.frequencyResponse = new WEQ8FrequencyResponse( this.runtime,this.frequencyResponseCanvas);
@@ -265,37 +287,12 @@ export class WEQ8UIElement extends LitElement {
   
 
 
-  // render() {
-  //   return html`
-  //     ${this.view === "allBands" ? this.renderTable() : null}
-  //     <div class="visualisation">
-  //       <svg
-  //         viewBox="0 0 100 10"
-  //         preserveAspectRatio="none"
-  //         xmlns="http://www.w3.org/2000/svg"
-  //       >
-  //         ${this.gridXs.map(this.renderGridX)}
-  //         ${[12, 6, 0, -6, -12].map(this.renderGridY)}
-  //       </svg>
-  //       <canvas class="analyser"></canvas>
-  //       <canvas
-  //         class="frequencyResponse"
-  //         @click=${() => (this.selectedFilterIdx = -1)}
-  //       ></canvas>
-  //       ${this.runtime?.spec.map((s, i) =>
-  //         s.type === "noop" ? undefined : this.renderFilterHandle(s, i)
-  //       )}
-  //       ${this.view === "hud" && this.selectedFilterIdx !== -1
-  //         ? this.renderFilterHUD()
-  //         : null}
-  //     </div>
-  //   `;
-  // }
-
-
   render() {
     return html`
-   
+    <button @click=${this.toggleRawAudio}>
+    ${this.showRawAudio ? 'Hide Raw Audio' : 'Show Raw Audio'}
+    </button>
+
       <div class="visualisation">
         <svg
           viewBox="0 0 100 10"
