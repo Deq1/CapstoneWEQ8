@@ -163,10 +163,6 @@ export class WEQ8UIElement extends LitElement {
   ];
 
 
-
-
-
-
   constructor() {
     super();
     this.addEventListener("click", (evt) => {
@@ -200,10 +196,11 @@ export class WEQ8UIElement extends LitElement {
   }
 
 
-   toggleUiVisible() {
+  toggleUiVisible() {
     this.isUiVisible = !this.isUiVisible;
     this.requestUpdate();
-   }
+  
+  }
 
 
   @state()
@@ -232,14 +229,16 @@ export class WEQ8UIElement extends LitElement {
   private frequencyResponseCanvas?: HTMLCanvasElement;
 
 
-  updated(changedProperties: Map<string, unknown>) {   
-  
-   
-    if (changedProperties.has("runtime") || changedProperties.has("showRawAudio")) {
 
-      this.analyser?.dispose();
-      this.RawAnalyser?.dispose();
-      this.frequencyResponse?.dispose();
+  RefreshUI(){
+    this.DrawAnalysers();
+  }
+
+
+
+
+  DrawAnalysers()
+  {
 
 
       if (this.runtime && this.analyserCanvas && this.frequencyResponseCanvas) {
@@ -262,11 +261,8 @@ export class WEQ8UIElement extends LitElement {
         }
   
 
-
         this.frequencyResponse = new WEQ8FrequencyResponse( this.runtime,this.frequencyResponseCanvas);
         this.frequencyResponse.render();
-
-
 
         let newGridXs: number[] = [];
         let nyquist = this.runtime.audioCtx.sampleRate / 2;
@@ -295,7 +291,91 @@ export class WEQ8UIElement extends LitElement {
 
 
       }
+    
+
+  } 
+
+
+
+
+  updated(changedProperties: Map<string, unknown>) {   
+  
+
+
+    if (changedProperties.has("runtime") || changedProperties.has("showRawAudio")){
+ 
+
+      this.analyser?.dispose();
+      this.RawAnalyser?.dispose();
+      this.frequencyResponse?.dispose();
+
+      this.DrawAnalysers();
     }
+
+
+    /*********** W/O using DrawAnalysers *********/
+   
+    // if (changedProperties.has("runtime") || changedProperties.has("showRawAudio")) {
+
+    //   this.analyser?.dispose();
+    //   this.RawAnalyser?.dispose();
+    //   this.frequencyResponse?.dispose();
+
+
+    //   if (this.runtime && this.analyserCanvas && this.frequencyResponseCanvas) {
+
+    //   console.log("called");
+    //     this.analyser = new WEQ8Analyser(this.runtime, this.analyserCanvas);
+    //     this.analyser.analyse();
+
+       
+    
+    //     if (this.showRawAudio && this.RawAnalyserCanvas) {
+    //       this.RawAnalyser = new WEQ8RawAudio(this.runtime, this.RawAnalyserCanvas);
+    //       this.RawAnalyser.analyse();
+          
+    //     }
+    //     else {
+    //       this.RawAnalyser?.dispose();
+    //       this.RawAnalyser = undefined;
+        
+    //     }
+
+
+    //     this.frequencyResponse = new WEQ8FrequencyResponse( this.runtime,this.frequencyResponseCanvas);
+    //     this.frequencyResponse.render();
+
+    //     let newGridXs: number[] = [];
+    //     let nyquist = this.runtime.audioCtx.sampleRate / 2;
+    //     let xLevelsOfScale = Math.floor(Math.log10(nyquist));
+    //     for (let los = 0; los < xLevelsOfScale; los++) {
+    //       let step = Math.pow(10, los + 1);
+    //       for (let i = 1; i < 10; i++) {
+    //         let freq = step * i;
+    //         if (freq > nyquist) break;
+    //         newGridXs.push(
+    //           ((Math.log10(freq) - 1) / (Math.log10(nyquist) - 1)) * 100
+    //         );
+    //       }
+    //     }
+    //     this.gridXs = newGridXs;
+
+    //     this.runtime.on("filtersChanged", () => {
+    //       this.frequencyResponse?.render();
+    //       this.requestUpdate();
+    //       for (let row of Array.from(
+    //         this.shadowRoot?.querySelectorAll("weq8-ui-filter-row") ?? []
+    //       )) {
+    //         (row as ReactiveElement).requestUpdate();
+    //       }
+    //     });
+
+
+    //   }
+    // }
+
+
+    /****************************** */
 
     if (changedProperties.has("view")) {
       this.requestUpdate(); // Request another update to set handle positions in new view flow
@@ -303,9 +383,12 @@ export class WEQ8UIElement extends LitElement {
 
 
     if (changedProperties.has('isUiVisible')) {
+      if(this.isUiVisible)
+        {
+        this.RefreshUI();
+        }
       this.classList.toggle('collapsed',!this.isUiVisible);
     } 
-
 
   }
   
