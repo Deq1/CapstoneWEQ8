@@ -32,6 +32,16 @@ export class WEQ8UIElement extends LitElement {
     border: 5px solid #a584e8 ;
   }
 
+  :host(.collapsed){
+    min-height:10px;
+    max-width:20px;
+   // padding: 10px;//
+    justify-content: center;
+    align-items: center;
+
+  }
+
+
   .filters {
     display: inline-grid;
     grid-auto-flow: row;
@@ -157,8 +167,6 @@ export class WEQ8UIElement extends LitElement {
 
 
 
-
-
   constructor() {
     super();
     this.addEventListener("click", (evt) => {
@@ -192,11 +200,21 @@ export class WEQ8UIElement extends LitElement {
   }
 
 
+   toggleUiVisible() {
+    this.isUiVisible = !this.isUiVisible;
+    this.requestUpdate();
+   }
+
+
   @state()
   private frequencyResponse?: WEQ8FrequencyResponse;
 
   @state()
   private gridXs: number[] = [];
+
+
+  @state()
+  private isUiVisible = true;
 
   @state()
   private dragStates: { [filterIdx: number]: number | null } = {};
@@ -284,47 +302,99 @@ export class WEQ8UIElement extends LitElement {
     }
 
 
+    if (changedProperties.has('isUiVisible')) {
+      this.classList.toggle('collapsed',!this.isUiVisible);
+    } 
+
+
   }
   
 
   
+
+
+  // render() {
+  //   return html`
+  //   <div>
+    
+  //      <button @click = ${this.toggleUiVisible}>
+  //         ${this.isUiVisible ? 'Hide the EQ' : 'Show the EQ'}
+  //      </button>
+  //     <button @click=${this.toggleRawAudio}>
+  //       ${this.showRawAudio ? 'Hide Raw Audio' : 'Show Raw Audio'}
+  //    </button>
+
+  //   </div>
+  //     <div class="visualisation">
+  //       <svg
+  //         viewBox="0 0 100 10"
+  //         preserveAspectRatio="none"
+  //         xmlns="http://www.w3.org/2000/svg"
+  //       >
+       
+  //         ${this.gridXs.map(this.renderGridX)}
+  //         ${[12, 6, 0, -6, -12].map(this.renderGridY)}
+  //                 </svg>
+
+  //     ${this.showRawAudio ? html`<canvas class="RawAnalyser"></canvas>` : ''}
+  //       <canvas class= "analyser"></canvas>
+        
+
+  //       <canvas
+  //         class="frequencyResponse"
+  //         @click=${() => (this.selectedFilterIdx = -1)}
+  //       ></canvas>
+  //       ${this.runtime?.spec.map((s, i) =>
+  //         s.type === "noop" ? undefined : this.renderFilterHandle(s, i)
+  //       )}
+  //       ${this.view === "hud" && this.selectedFilterIdx !== -1
+  //         ? this.renderFilterHUD()
+  //         : null}
+  //     </div>
+  //     ${this.view === "allBands" ? this.renderTable() : null}
+  //   `;
+  // }
+
+
+
+
 
 
   render() {
+    
+    
+
     return html`
-    <button @click=${this.toggleRawAudio}>
-    ${this.showRawAudio ? 'Hide Raw Audio' : 'Show Raw Audio'}
-    </button>
 
-      <div class="visualisation">
-        <svg
-          viewBox="0 0 100 10"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-       
-          ${this.gridXs.map(this.renderGridX)}
-          ${[12, 6, 0, -6, -12].map(this.renderGridY)}
-                  </svg>
+    <div>
+        <button @click=${this.toggleUiVisible}>
+            ${this.isUiVisible ? 'Hide the EQ' : 'Show the EQ'}
+        </button>
 
-      ${this.showRawAudio ? html`<canvas class="RawAnalyser"></canvas>` : ''}
-        <canvas class= "analyser"></canvas>
-        
+        ${this.isUiVisible ? html`
+        <div>
+            <button @click=${this.toggleRawAudio}>
+                ${this.showRawAudio ? 'Output Signal' : 'Input Signal'}
+            </button>
+       </div>
+            <div class="visualisation">
+                <svg viewBox="0 0 100 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    ${this.gridXs.map(this.renderGridX)}
+                    ${[12, 6, 0, -6, -12].map(this.renderGridY)}
+                </svg>
+                ${this.showRawAudio ? html`<canvas class="RawAnalyser"></canvas>` : ''}
+                <canvas class="analyser"></canvas>
+                <canvas class="frequencyResponse" @click=${() => (this.selectedFilterIdx = -1)}></canvas>
+                ${this.runtime?.spec.map((s, i) => s.type === "noop" ? undefined : this.renderFilterHandle(s, i))}
+                ${this.view === "hud" && this.selectedFilterIdx !== -1 ? this.renderFilterHUD() : null}
+            </div>
+            ${this.view === "allBands" ? this.renderTable() : null}
+        ` : ''}
 
-        <canvas
-          class="frequencyResponse"
-          @click=${() => (this.selectedFilterIdx = -1)}
-        ></canvas>
-        ${this.runtime?.spec.map((s, i) =>
-          s.type === "noop" ? undefined : this.renderFilterHandle(s, i)
-        )}
-        ${this.view === "hud" && this.selectedFilterIdx !== -1
-          ? this.renderFilterHUD()
-          : null}
-      </div>
-      ${this.view === "allBands" ? this.renderTable() : null}
+  
     `;
-  }
+}
+
 
 
 
