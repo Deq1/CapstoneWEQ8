@@ -14,9 +14,17 @@ export class WEQ8Runtime {
 
   private readonly emitter: Emitter<WEQ8Events>;
 
+
+  /*  presets try out    */
+
+  private presets: { [name: string ]: WEQ8Spec } = {}; 
+
+  private presetNames: string[] = [];
+  
+
   constructor(
     public readonly audioCtx: BaseAudioContext,
-    public readonly spec: WEQ8Spec = DEFAULT_SPEC,
+    public spec: WEQ8Spec = DEFAULT_SPEC,
     public readonly supportedFilterTypes: FilterType[] = FILTER_TYPES
   ) {
     this.input = audioCtx.createGain();
@@ -217,10 +225,10 @@ export class WEQ8Runtime {
           return filter;
         }
       );
-      this.filterbank.push({ idx: i, filters });
-    }
-    if (this.filterbank.length === 0) {
-      this.input.connect(this.output);
+      this.filterbank.push({ idx: i, filters });  
+    }   
+    if (this.filterbank.length === 0) {   
+      this.input.connect(this.output);  
     } else {
       for (let i = 0; i < this.filterbank.length; i++) {
         let { filters } = this.filterbank[i];
@@ -264,4 +272,43 @@ export class WEQ8Runtime {
     }
     return next;
   }
+
+
+
+
+
+   /*   preset methods */
+
+   getCurrentSpec(): WEQ8Spec {
+    return this.spec;
+   }
+
+
+   saveSpec(name:string ):void {
+     this.presets[name] = this.getCurrentSpec();
+     this.updatePresetNames();
+   }
+
+
+   loadSpec(name:string):void {
+     const preset = this.presets[name];
+
+     if(!preset) {
+      throw new Error(`Preset "${name}" not found`);
+     } 
+
+     this.spec = preset;
+     this.buildFilterChain(this.spec);
+     this.emitter.emit('filtersChanged', this.spec);
+   } 
+
+
+   private updatePresetNames(): void {
+      this.presetNames = Object.keys(this.presets);
+    } 
+
+   getPresetNames(): string[] {
+       return this.presetNames;
+   }
+
 }

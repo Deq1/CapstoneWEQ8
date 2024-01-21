@@ -214,6 +214,9 @@ export class WEQ8UIElement extends LitElement {
   private isUiVisible = true;
 
   @state()
+  private isPresetListVisible = false;
+
+  @state()
   private dragStates: { [filterIdx: number]: number | null } = {};
 
   @state()
@@ -229,26 +232,99 @@ export class WEQ8UIElement extends LitElement {
   private frequencyResponseCanvas?: HTMLCanvasElement;
 
 
+ 
+
+   
+ /* Save and load preset in UI part */
+
+  private savePreset() {
+    const presetName = prompt("Enter name for the preset:") ; 
+    if (presetName && this.runtime) {
+        this.runtime.saveSpec(presetName);
+        alert(`Preset '${presetName}' saved.`);
+    }
+  }
+
+
+  private showPresetList() {
+
+    const container = this.shadowRoot?.getElementById('presetListContainer');
+
+    if (this.isPresetListVisible) {
+        // If the list is already visible, hide it
+        if (container) {
+            container.innerHTML = '';  // Clear the dropdown content
+        }
+        this.hidePresetList();
+    } else {
+        // If the list is not visible, create and show it
+        const presetNames = this.runtime?.getPresetNames();
+        if (!presetNames || presetNames.length === 0) {
+            alert("No presets available.");
+            return;
+        }
+
+        // Create a select element
+        const dropdown = document.createElement('select');
+        dropdown.innerHTML = `<option disabled selected>Select a Preset</option>`;
+
+        // Append options for each preset
+        presetNames.forEach(presetName => {
+            const option = document.createElement('option');
+            option.value = presetName;
+            option.textContent = presetName;
+            dropdown.appendChild(option);
+        });
+
+        // Handle preset selection
+        dropdown.addEventListener('change', () => {
+            if (this.runtime && dropdown.value) {
+                this.runtime.loadSpec(dropdown.value);
+                this.hidePresetList();  // Hide the list after selection
+            }
+        });
+
+        // Append the dropdown to the container
+        if (container) {
+            container.appendChild(dropdown);
+        }
+
+        this.isPresetListVisible = true;      
+        console.log("PresetVisible is set to true"); 
+    }
+}
+
+
+private hidePresetList(){
+    const container = this.shadowRoot?.getElementById('presetListContainer');
+    if (container) {
+        container.innerHTML = ''; // Clear the dropdown content
+    }
+
+    this.isPresetListVisible = false;
+
+    console.log("PresetVisible is set to false");
+}
+
+
+
+
+
+
 
   RefreshUI(){
     this.DrawAnalysers();
   }
 
 
-
-
   DrawAnalysers()
   {
-
-
       if (this.runtime && this.analyserCanvas && this.frequencyResponseCanvas) {
 
       console.log("called");
         this.analyser = new WEQ8Analyser(this.runtime, this.analyserCanvas);
         this.analyser.analyse();
-
-       
-    
+   
         if (this.showRawAudio && this.RawAnalyserCanvas) {
           this.RawAnalyser = new WEQ8RawAudio(this.runtime, this.RawAnalyserCanvas);
           this.RawAnalyser.analyse();
@@ -260,7 +336,6 @@ export class WEQ8UIElement extends LitElement {
         
         }
   
-
         this.frequencyResponse = new WEQ8FrequencyResponse( this.runtime,this.frequencyResponseCanvas);
         this.frequencyResponse.render();
 
@@ -288,22 +363,14 @@ export class WEQ8UIElement extends LitElement {
             (row as ReactiveElement).requestUpdate();
           }
         });
-
-
-      }
-    
-
+      } 
   } 
 
 
 
 
   updated(changedProperties: Map<string, unknown>) {   
-  
-
-
     if (changedProperties.has("runtime") || changedProperties.has("showRawAudio")){
- 
 
       this.analyser?.dispose();
       this.RawAnalyser?.dispose();
@@ -311,76 +378,10 @@ export class WEQ8UIElement extends LitElement {
 
       this.DrawAnalysers();
     }
-
-
-    /*********** W/O using DrawAnalysers *********/
-   
-    // if (changedProperties.has("runtime") || changedProperties.has("showRawAudio")) {
-
-    //   this.analyser?.dispose();
-    //   this.RawAnalyser?.dispose();
-    //   this.frequencyResponse?.dispose();
-
-
-    //   if (this.runtime && this.analyserCanvas && this.frequencyResponseCanvas) {
-
-    //   console.log("called");
-    //     this.analyser = new WEQ8Analyser(this.runtime, this.analyserCanvas);
-    //     this.analyser.analyse();
-
-       
-    
-    //     if (this.showRawAudio && this.RawAnalyserCanvas) {
-    //       this.RawAnalyser = new WEQ8RawAudio(this.runtime, this.RawAnalyserCanvas);
-    //       this.RawAnalyser.analyse();
-          
-    //     }
-    //     else {
-    //       this.RawAnalyser?.dispose();
-    //       this.RawAnalyser = undefined;
-        
-    //     }
-
-
-    //     this.frequencyResponse = new WEQ8FrequencyResponse( this.runtime,this.frequencyResponseCanvas);
-    //     this.frequencyResponse.render();
-
-    //     let newGridXs: number[] = [];
-    //     let nyquist = this.runtime.audioCtx.sampleRate / 2;
-    //     let xLevelsOfScale = Math.floor(Math.log10(nyquist));
-    //     for (let los = 0; los < xLevelsOfScale; los++) {
-    //       let step = Math.pow(10, los + 1);
-    //       for (let i = 1; i < 10; i++) {
-    //         let freq = step * i;
-    //         if (freq > nyquist) break;
-    //         newGridXs.push(
-    //           ((Math.log10(freq) - 1) / (Math.log10(nyquist) - 1)) * 100
-    //         );
-    //       }
-    //     }
-    //     this.gridXs = newGridXs;
-
-    //     this.runtime.on("filtersChanged", () => {
-    //       this.frequencyResponse?.render();
-    //       this.requestUpdate();
-    //       for (let row of Array.from(
-    //         this.shadowRoot?.querySelectorAll("weq8-ui-filter-row") ?? []
-    //       )) {
-    //         (row as ReactiveElement).requestUpdate();
-    //       }
-    //     });
-
-
-    //   }
-    // }
-
-
-    /****************************** */
-
+  
     if (changedProperties.has("view")) {
       this.requestUpdate(); // Request another update to set handle positions in new view flow
     }
-
 
     if (changedProperties.has('isUiVisible')) {
       if(this.isUiVisible)
@@ -393,62 +394,10 @@ export class WEQ8UIElement extends LitElement {
   }
   
 
-  
-
-
-  // render() {
-  //   return html`
-  //   <div>
-    
-  //      <button @click = ${this.toggleUiVisible}>
-  //         ${this.isUiVisible ? 'Hide the EQ' : 'Show the EQ'}
-  //      </button>
-  //     <button @click=${this.toggleRawAudio}>
-  //       ${this.showRawAudio ? 'Hide Raw Audio' : 'Show Raw Audio'}
-  //    </button>
-
-  //   </div>
-  //     <div class="visualisation">
-  //       <svg
-  //         viewBox="0 0 100 10"
-  //         preserveAspectRatio="none"
-  //         xmlns="http://www.w3.org/2000/svg"
-  //       >
-       
-  //         ${this.gridXs.map(this.renderGridX)}
-  //         ${[12, 6, 0, -6, -12].map(this.renderGridY)}
-  //                 </svg>
-
-  //     ${this.showRawAudio ? html`<canvas class="RawAnalyser"></canvas>` : ''}
-  //       <canvas class= "analyser"></canvas>
-        
-
-  //       <canvas
-  //         class="frequencyResponse"
-  //         @click=${() => (this.selectedFilterIdx = -1)}
-  //       ></canvas>
-  //       ${this.runtime?.spec.map((s, i) =>
-  //         s.type === "noop" ? undefined : this.renderFilterHandle(s, i)
-  //       )}
-  //       ${this.view === "hud" && this.selectedFilterIdx !== -1
-  //         ? this.renderFilterHUD()
-  //         : null}
-  //     </div>
-  //     ${this.view === "allBands" ? this.renderTable() : null}
-  //   `;
-  // }
-
-
-
-
-
 
   render() {
-    
-    
-
+  
     return html`
-
     <div>
         <button @click=${this.toggleUiVisible}>
             ${this.isUiVisible ? 'Hide the EQ' : 'Show the EQ'}
@@ -456,10 +405,22 @@ export class WEQ8UIElement extends LitElement {
 
         ${this.isUiVisible ? html`
         <div>
-            <button @click=${this.toggleRawAudio}>
-                ${this.showRawAudio ? 'Output Signal' : 'Input Signal'}
-            </button>
+                     <button @click=${this.toggleRawAudio}>
+                    ${this.showRawAudio ? 'Output Signal' : 'Input Signal'}
+                     </button>
+
+              <div class="preset-controls">
+                     <button @click=${this.savePreset}>Save Preset</button>
+                     <button @click=${this.showPresetList}>
+                         ${this.isPresetListVisible ? 'Hide the Preset' : 'Show the Preset'}
+                     </button>
+                   <div id = "presetListContainer"></div>
+              </div>
+         </div>
+
+
        </div>
+
             <div class="visualisation">
                 <svg viewBox="0 0 100 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     ${this.gridXs.map(this.renderGridX)}
