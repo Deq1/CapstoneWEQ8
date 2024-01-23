@@ -312,8 +312,9 @@ private hidePresetList(){
 
 
 
-  RefreshUI(){
+  RefreshAnalysers(){
     this.DrawAnalysers();
+    this.requestUpdate();
   }
 
 
@@ -386,7 +387,7 @@ private hidePresetList(){
     if (changedProperties.has('isUiVisible')) {
       if(this.isUiVisible)
         {
-        this.RefreshUI();
+        this.RefreshAnalysers();
         }
       this.classList.toggle('collapsed',!this.isUiVisible);
     } 
