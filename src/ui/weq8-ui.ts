@@ -309,7 +309,19 @@ private hidePresetList(){
 
 
 
+connectedCallback() {
+  super.connectedCallback();
+    this.runtime?.on('filtersChanged', () => {
+      this.requestUpdate()
+    });
+}
 
+
+resetEQ(){
+  this.runtime?.resetFilters();
+}
+
+ 
 
 
   RefreshAnalysers(){
@@ -322,7 +334,7 @@ private hidePresetList(){
   {
       if (this.runtime && this.analyserCanvas && this.frequencyResponseCanvas) {
 
-      console.log("called");
+   
         this.analyser = new WEQ8Analyser(this.runtime, this.analyserCanvas);
         this.analyser.analyse();
    
@@ -355,6 +367,7 @@ private hidePresetList(){
         }
         this.gridXs = newGridXs;
 
+       
         this.runtime.on("filtersChanged", () => {
           this.frequencyResponse?.render();
           this.requestUpdate();
@@ -387,7 +400,7 @@ private hidePresetList(){
     if (changedProperties.has('isUiVisible')) {
       if(this.isUiVisible)
         {
-        this.RefreshAnalysers();
+        this.RefreshAnalysers();  
         }
       this.classList.toggle('collapsed',!this.isUiVisible);
     } 
@@ -411,8 +424,10 @@ private hidePresetList(){
                      </button>
 
               <div class="preset-controls">
+                     <button @click=${this.resetEQ}>Reset EQ</button>
                      <button @click=${this.savePreset}>Save Preset</button>
                      <button @click=${this.showPresetList}>
+
                          ${this.isPresetListVisible ? 'Hide the Preset' : 'Show the Preset'}
                      </button>
                    <div id = "presetListContainer"></div>

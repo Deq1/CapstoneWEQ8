@@ -17,6 +17,17 @@ export class WEQ8Runtime {
 
   /*  presets try out    */
 
+  private FIXED_SPEC:WEQ8Spec = [
+    { type: "lowshelf12", frequency: 30, gain: 0, Q: 0.7, bypass: false },
+    { type: "peaking12", frequency: 200, gain: 0, Q: 0.7, bypass: false },
+    { type: "peaking12", frequency: 1000, gain: 0, Q: 0.7, bypass: false },
+    { type: "highshelf12", frequency: 5000, gain: 0, Q: 0.7, bypass: false },
+    { type: "noop", frequency: 350, gain: 0, Q: 1, bypass: false },
+    { type: "noop", frequency: 350, gain: 0, Q: 1, bypass: false },
+    { type: "noop", frequency: 350, gain: 0, Q: 1, bypass: false },
+    { type: "noop", frequency: 350, gain: 0, Q: 1, bypass: false },
+  ];
+
   private presets: { [name: string ]: WEQ8Spec } = {}; 
 
   private presetNames: string[] = [];
@@ -165,6 +176,7 @@ export class WEQ8Runtime {
       }
     }
     this.emitter.emit("filtersChanged", this.spec);
+   // console.log('setFilterFrequency Called');
   }
 
   setFilterQ(idx: number, Q: number): void {
@@ -176,6 +188,7 @@ export class WEQ8Runtime {
       }
     }
     this.emitter.emit("filtersChanged", this.spec);
+   // console.log('setFilterQ Called');
   }
 
   setFilterGain(idx: number, gain: number): void {
@@ -187,6 +200,7 @@ export class WEQ8Runtime {
       }
     }
     this.emitter.emit("filtersChanged", this.spec);
+    //console.log('setFilterGain Called');
   }
 
   getFrequencyResponse(
@@ -273,8 +287,18 @@ export class WEQ8Runtime {
     return next;
   }
 
-
-
+  
+  resetFilters(): void {
+    for (let i = 0; i < this.FIXED_SPEC.length; i++) {
+      const defaultFilter = this.FIXED_SPEC[i];
+      this.setFilterType(i, defaultFilter.type);
+      this.setFilterFrequency(i, defaultFilter.frequency);
+      this.setFilterQ(i, defaultFilter.Q);
+      this.setFilterGain(i, defaultFilter.gain);
+  
+    }
+    this.emitter.emit('filtersChanged', this.spec);  
+  }
 
 
    /*   preset methods */
