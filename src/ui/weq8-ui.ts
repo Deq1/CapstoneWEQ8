@@ -238,83 +238,83 @@ export class WEQ8UIElement extends LitElement {
  /* Save and load preset in UI part */
 
   private savePreset() {
-    // const presetName = prompt("Enter name for the preset:") ; 
-    // if (presetName && this.runtime) {
-    //     this.runtime.saveSpec(presetName);
-    //     alert(`Preset '${presetName}' saved.`);
-    // }
+    const presetName = prompt("Enter name for the preset:") ; 
+    if (presetName && this.runtime) {
+        this.runtime.saveSpec(presetName);
+        alert(`Preset '${presetName}' saved.`);
+    }
   }
 
 
   private showPresetList() {
 
-    // const container = this.shadowRoot?.getElementById('presetListContainer');
+    const container = this.shadowRoot?.getElementById('presetListContainer');
 
-    // if (this.isPresetListVisible) {
-    //     // If the list is already visible, hide it
-    //     if (container) {
-    //         container.innerHTML = '';  // Clear the dropdown content
-    //     }
-    //     this.hidePresetList();
-    // } else {
-    //     // If the list is not visible, create and show it
-    //     const presetNames = this.runtime?.getPresetNames();
-    //     if (!presetNames || presetNames.length === 0) {
-    //         alert("No presets available.");
-    //         return;
-    //     }
+    if (this.isPresetListVisible) {
+        // If the list is already visible, hide it
+        if (container) {
+            container.innerHTML = '';  // Clear the dropdown content
+        }
+        this.hidePresetList();
+    } else {
+        // If the list is not visible, create and show it
+        const presetNames = this.runtime?.getPresetNames();
+        if (!presetNames || presetNames.length === 0) {
+            alert("No presets available.");
+            return;
+        }
 
-    //     // Create a select element
-    //     const dropdown = document.createElement('select');
-    //     dropdown.innerHTML = `<option disabled selected>Select a Preset</option>`;
+        // Create a select element
+        const dropdown = document.createElement('select');
+        dropdown.innerHTML = `<option disabled selected>Select a Preset</option>`;
 
-    //     // Append options for each preset
-    //     presetNames.forEach(presetName => {
-    //         const option = document.createElement('option');
-    //         option.value = presetName;
-    //         option.textContent = presetName;
-    //         dropdown.appendChild(option);
-    //     });
+        // Append options for each preset
+        presetNames.forEach(presetName => {
+            const option = document.createElement('option');
+            option.value = presetName;
+            option.textContent = presetName;
+            dropdown.appendChild(option);
+        });
 
-    //     // Handle preset selection
-    //     dropdown.addEventListener('change', () => {
-    //         if (this.runtime && dropdown.value) {
-    //             this.runtime.loadSpec(dropdown.value);
-    //             this.hidePresetList();  // Hide the list after selection
-    //         }
-    //     });
+        // Handle preset selection
+        dropdown.addEventListener('change', () => {
+            if (this.runtime && dropdown.value) {
+                this.runtime.loadSpec(dropdown.value);
+                this.hidePresetList();  // Hide the list after selection
+            }
+        });
 
-    //     // Append the dropdown to the container
-    //     if (container) {
-    //         container.appendChild(dropdown);
-    //     }
+        // Append the dropdown to the container
+        if (container) {
+            container.appendChild(dropdown);
+        }
 
-    //     this.isPresetListVisible = true;      
-    //     console.log("PresetVisible is set to true"); 
-    // }
+        this.isPresetListVisible = true;      
+        console.log("PresetVisible is set to true"); 
+    }
 }
 
 
 private hidePresetList(){
-    // const container = this.shadowRoot?.getElementById('presetListContainer');
-    // if (container) {
-    //     container.innerHTML = ''; // Clear the dropdown content
-    // }
+    const container = this.shadowRoot?.getElementById('presetListContainer');
+    if (container) {
+        container.innerHTML = ''; // Clear the dropdown content
+    }
 
-    // this.isPresetListVisible = false;
+    this.isPresetListVisible = false;
 
-    // console.log("PresetVisible is set to false");
+    console.log("PresetVisible is set to false");
 }
 
 
 
 
-connectedCallback() {
-  super.connectedCallback();
-    this.runtime?.on('filtersChanged', () => {
-      this.requestUpdate()
-    });
-}
+// connectedCallback() {
+//   super.connectedCallback();
+//     this.runtime?.on('filtersChanged', () => {
+//       this.requestUpdate()
+//     });
+// }
 
 
 resetEQ(){

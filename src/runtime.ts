@@ -287,29 +287,37 @@ export class WEQ8Runtime {
     return next;
   }
 
-  
-  resetFilters(): void {
-    for (let i = 0; i < this.FIXED_SPEC.length; i++) {
-      const defaultFilter = this.FIXED_SPEC[i];
+
+
+  setFilterSpec(spec: WEQ8Spec)  {
+     for(let i = 0 ; i < spec.length ; i++){
+      const defaultFilter = spec[i];
       this.setFilterType(i, defaultFilter.type);
       this.setFilterFrequency(i, defaultFilter.frequency);
       this.setFilterQ(i, defaultFilter.Q);
       this.setFilterGain(i, defaultFilter.gain);
+     }
+     this.emitter.emit('filtersChanged', spec);
+  }
   
-    }
-    this.emitter.emit('filtersChanged', this.spec);  
+  
+  resetFilters(): void {
+   this.setFilterSpec(this.FIXED_SPEC);
   }
 
 
    /*   preset methods */
 
    getCurrentSpec(): WEQ8Spec {
+    this.spec.forEach(filter => {
+      console.log(`Type: ${filter.type}, Frequency: ${filter.frequency}, Gain: ${filter.gain}, Q: ${filter.Q}`);
+  });
     return this.spec;
    }
 
 
    saveSpec(name:string ):void {
-     this.presets[name] = this.getCurrentSpec();
+     this.presets[name] = JSON.parse(JSON.stringify(this.getCurrentSpec()));
      this.updatePresetNames();
    }
 
@@ -317,22 +325,30 @@ export class WEQ8Runtime {
    loadSpec(name:string):void {
      const preset = this.presets[name];
 
+
      if(!preset) {
       throw new Error(`Preset "${name}" not found`);
      } 
 
-     this.spec = preset;
-     this.buildFilterChain(this.spec);
-     this.emitter.emit('filtersChanged', this.spec);
+
+    preset.forEach(filter => {
+      console.log(`Type: ${filter.type}, Frequency: ${filter.frequency}, Gain: ${filter.gain}, Q: ${filter.Q}`);
+    });
+    
+    this.setFilterSpec(preset);
    } 
+   
+
+   updatePresetNames(): void {
+    this.presetNames = Object.keys(this.presets);
+}
 
 
-   private updatePresetNames(): void {
-      this.presetNames = Object.keys(this.presets);
-    } 
 
    getPresetNames(): string[] {
        return this.presetNames;
    }
 
+
+  
 }
