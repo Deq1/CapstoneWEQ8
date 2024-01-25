@@ -246,7 +246,7 @@ export class WEQ8UIElement extends LitElement {
   }
 
 
-  private showPresetList() {
+  private loadPresetList() {
 
     const container = this.shadowRoot?.getElementById('presetListContainer');
 
@@ -280,6 +280,10 @@ export class WEQ8UIElement extends LitElement {
         dropdown.addEventListener('change', () => {
             if (this.runtime && dropdown.value) {
                 this.runtime.loadSpec(dropdown.value);
+
+                // deleteSpec test
+                // this.runtime?.deleteSpec(dropdown.value); 
+
                 this.hidePresetList();  // Hide the list after selection
             }
         });
@@ -292,6 +296,59 @@ export class WEQ8UIElement extends LitElement {
         this.isPresetListVisible = true;      
         console.log("PresetVisible is set to true"); 
     }
+}
+
+
+private deletePresetList() {
+
+  const container = this.shadowRoot?.getElementById('presetListContainer');
+
+  if (this.isPresetListVisible) {
+      // If the list is already visible, hide it
+      if (container) {
+          container.innerHTML = '';  // Clear the dropdown content
+      }
+      this.hidePresetList();
+  } else {
+      // If the list is not visible, create and show it
+      const presetNames = this.runtime?.getPresetNames();
+      if (!presetNames || presetNames.length === 0) {
+          alert("No presets available.");
+          return;
+      }
+
+      // Create a select element
+      const dropdown = document.createElement('select');
+      dropdown.innerHTML = `<option disabled selected>Select a Preset</option>`;
+
+      // Append options for each preset
+      presetNames.forEach(presetName => {
+          const option = document.createElement('option');
+          option.value = presetName;
+          option.textContent = presetName;
+          dropdown.appendChild(option);
+      });
+
+      // Handle preset selection
+      dropdown.addEventListener('change', () => {
+          if (this.runtime && dropdown.value) {
+             
+              // deleteSpec test
+              this.runtime?.deleteSpec(dropdown.value); 
+              this.hidePresetList();  // Hide the list after selection
+          }
+      });
+
+      // Append the dropdown to the container
+      if (container) {
+          container.appendChild(dropdown);
+      }
+
+      this.isPresetListVisible = true;      
+      console.log("PresetVisible is set to true"); 
+  }
+
+  
 }
 
 
@@ -426,10 +483,11 @@ resetEQ(){
               <div class="preset-controls">
                      <button @click=${this.resetEQ}>Reset EQ</button>
                      <button @click=${this.savePreset}>Save Preset</button>
-                     <button @click=${this.showPresetList}>
+                     <button @click= ${this.loadPresetList}>Load Preset</button>
+                     <button @click=${this.deletePresetList}>Delete Preset</button>
 
-                         ${this.isPresetListVisible ? 'Hide the Preset' : 'Show the Preset'}
-                     </button>
+              
+                     
                    <div id = "presetListContainer"></div>
               </div>
          </div>

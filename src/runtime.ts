@@ -351,4 +351,17 @@ export class WEQ8Runtime {
 
 
   
+   deleteSpec(name : string) {
+
+   if(!this.presets[name]) {
+    console.warn(`Preset "${name}" not found.`);
+   } 
+   else {
+     delete this.presets[name];
+     this.updatePresetNames();  
+   }
+
+   }
+   
+  
 }
