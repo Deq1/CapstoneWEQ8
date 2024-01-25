@@ -484,6 +484,7 @@ resetEQ(){
                      <button @click=${this.resetEQ}>Reset EQ</button>
                      <button @click=${this.savePreset}>Save Preset</button>
                      <button @click= ${this.loadPresetList}>Load Preset</button>
+        
                      <button @click=${this.deletePresetList}>Delete Preset</button>
 
               
