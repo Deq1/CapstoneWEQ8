@@ -584,35 +584,48 @@ resetEQ(){
     />`;
   }
 
-///////////////////////////////////////////
 
+
+
+  // private renderFilterHandle(spec: WEQ8Filter, idx: number) {
+  //   if (!this.runtime) return;
+  //   let [x, y] = this.getFilterPositionInVisualisation(spec);
+  //   return html`<div
+  //     class="filter-handle-positioner"
+  //     style="transform: translate(${x}px,${y}px)"
+  //     @pointerdown=${(evt: PointerEvent) =>
+  //       this.startDraggingFilterHandle(evt, idx)}
+  //     @pointerup=${(evt: PointerEvent) =>
+  //       this.stopDraggingFilterHandle(evt, idx)}
+  //     @pointermove=${(evt: PointerEvent) => this.dragFilterHandle(evt, idx)}
+  //   >
+  //     <div
+  //       class="${classMap({
+  //         "filter-handle": true,
+  //         bypassed: spec.bypass,
+  //         selected: idx === this.selectedFilterIdx,
+  //       })}"
+  //     >
+  //       ${idx + 1}
+  //     </div>
+  //   </div>`;
+  // }
 
 
   
 
+  // renderFilterHandle() disabled the filter handlers 
+  
   private renderFilterHandle(spec: WEQ8Filter, idx: number) {
     if (!this.runtime) return;
     let [x, y] = this.getFilterPositionInVisualisation(spec);
-    return html`<div
-      class="filter-handle-positioner"
-      style="transform: translate(${x}px,${y}px)"
-      @pointerdown=${(evt: PointerEvent) =>
-        this.startDraggingFilterHandle(evt, idx)}
-      @pointerup=${(evt: PointerEvent) =>
-        this.stopDraggingFilterHandle(evt, idx)}
-      @pointermove=${(evt: PointerEvent) => this.dragFilterHandle(evt, idx)}
-    >
-      <div
-        class="${classMap({
-          "filter-handle": true,
-          bypassed: spec.bypass,
-          selected: idx === this.selectedFilterIdx,
-        })}"
-      >
-        ${idx + 1}
-      </div>
-    </div>`;
+    return null;
+
   }
+
+
+
+
 
   private getFilterPositionInVisualisation(spec: WEQ8Filter): [number, number] {
     if (!this.runtime) return [0, 0];
