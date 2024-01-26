@@ -587,6 +587,8 @@ resetEQ(){
 
 
 
+  
+
   // private renderFilterHandle(spec: WEQ8Filter, idx: number) {
   //   if (!this.runtime) return;
   //   let [x, y] = this.getFilterPositionInVisualisation(spec);
@@ -612,7 +614,7 @@ resetEQ(){
   // }
 
 
-  
+
 
   // renderFilterHandle() disabled the filter handlers 
   

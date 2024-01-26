@@ -10,6 +10,9 @@
 // ];
 
 
+
+
+
 export type WEQ8Spec = [
   WEQ8Filter,
   WEQ8Filter,
@@ -55,6 +58,13 @@ export type WEQ8Filter = {
   gain: number;
   bypass: boolean;
 };
+
+
+
+
+
+
+
 
 // export const DEFAULT_SPEC: WEQ8Spec = [
 //   { type: "lowshelf12", frequency: 30, gain: 0, Q: 0.7, bypass: false },
