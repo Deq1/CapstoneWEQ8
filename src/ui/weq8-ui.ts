@@ -29,8 +29,9 @@ export class WEQ8UIElement extends LitElement {
     padding: 20px;
     border-radius: 8px;
     overflow: visible;
-    background: #202020;
-    border: 5px solid #a584e8 ;
+    background: #1A1A1A;
+    border: 10px solid #8B4513;
+     
   }
 
   :host(.collapsed){
