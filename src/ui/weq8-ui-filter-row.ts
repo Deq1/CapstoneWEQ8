@@ -13,8 +13,10 @@ import {
   toLin,
   toLog10,
 } from "../functions";
+
 import { sharedStyles } from "./styles";
 import { TYPE_OPTIONS } from "./constants";
+
 
 type DragState = {
   pointer: number;
@@ -22,11 +24,17 @@ type DragState = {
   startValue: number;
 };
 
+const frequencyRange = {min: 20, max: 24000};
+const gainRange = {min: -15, max: 15};
+const qRange = {min:0.1, max: 18};
+
+
+
 @customElement("weq8-ui-filter-row")
 export class EQUIFilterRowElement extends LitElement {
   static styles = [
     sharedStyles,
-    css`
+    css`  
       :host {
         display: grid;
         grid-auto-flow: column;
@@ -141,8 +149,62 @@ export class EQUIFilterRowElement extends LitElement {
         -webkit-appearance: none !important;
         margin: 0 !important;
       }
+
+
+
+
+      .knob {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: radial-gradient(circle at center, #e0e0e0 0%, #b0b0b0 70%, #909090 100%);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 -5px 15px rgba(255, 255, 255, 0.3);
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .knob::before {
+        content: '';
+        position: absolute;
+        top: 5px;
+        left: 22.5px;
+        width: 5px;
+        height: 10px;
+        background-color: #757575; /* Adjusted to a shade of grey */
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+    
+
+
+    .slider-track {
+      width: 10px; 
+      height: 200px; 
+      background-color: #c0c0c0; 
+      border-radius: 5px; 
+      position: relative;
+      margin: 20px auto; 
+  }
+  
+
+  .slider-thumb {
+      width: 50px; 
+      height: 50px; 
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #e0e0e0 0%, #b0b0b0 70%, #909090 100%);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 -5px 15px rgba(255, 255, 255, 0.3);
+      position: absolute;
+      top: 0; 
+      left: 50%;
+      transform: translateX(-50%); 
+      cursor: pointer;
+  }
+
     `,
   ];
+
+  
+
 
   constructor() {
     super();
@@ -177,6 +239,12 @@ export class EQUIFilterRowElement extends LitElement {
     );
 
     let spec = this.runtime.spec[this.index];
+
+
+    const frequencyDegree = this.frequencyToDegree(spec.frequency);
+    const gainDegree = this.gainToDegree(spec.gain);
+    const qDegree = this.qToDegree(spec.Q);
+
     return html`
       <th>
         <div
@@ -186,20 +254,20 @@ export class EQUIFilterRowElement extends LitElement {
             bypassed: spec.bypass,
           })}
         >
-          <div
-            class=${classMap({
-              filterNumber: true,
-              bypassed: spec.bypass,
-            })}
-            @click=${() => this.toggleBypass()}
-          >
-            ${this.index + 1}
-          </div>
-          <select
-            class=${classMap({ filterTypeSelect: true, bypassed: spec.bypass })}
-            @change=${(evt: { target: HTMLSelectElement }) =>
-              this.setFilterType(evt.target.value as FilterType | "noop")}
-          >
+        <div
+        class=${classMap({
+          filterNumber: true,
+          bypassed: spec.bypass,
+        })}
+        @click=${() => this.toggleBypass()}
+      >
+        ${this.index + 1}
+      </div>
+      <select
+      class=${classMap({ filterTypeSelect: true, bypassed: spec.bypass })}
+      @change=${(evt: { target: HTMLSelectElement }) =>
+        this.setFilterType(evt.target.value as FilterType | "noop")}
+       >
             ${typeOptions.map(
               ([type, label]) =>
                 html`<option value=${type} ?selected=${spec.type === type}>
@@ -227,7 +295,7 @@ export class EQUIFilterRowElement extends LitElement {
             this.setFilterFrequency(clamp(spec.frequency, 10, this.nyquist));
           }}
           @input=${(evt: { target: HTMLInputElement }) =>
-            this.setFilterFrequency(evt.target.valueAsNumber)}
+          this.setFilterFrequency(evt.target.valueAsNumber)}
           @pointerdown=${(evt: PointerEvent) =>
             this.startDraggingValue(evt, "frequency")}
           @pointerup=${(evt: PointerEvent) =>
@@ -246,6 +314,7 @@ export class EQUIFilterRowElement extends LitElement {
             this.frequencyInputFocused
           )}</span
         >
+        <div class="knob" style="transform: rotate(${frequencyDegree}deg)"></div>
       </td>
       <td>
         <input
@@ -277,6 +346,9 @@ export class EQUIFilterRowElement extends LitElement {
           })}
           >dB</span
         >
+        <div class =  "knob"  style = "transform: rotate(${gainDegree}deg)"></div>
+         
+        </div>
       </td>
       <td>
         <input
@@ -298,10 +370,16 @@ export class EQUIFilterRowElement extends LitElement {
           @pointerup=${(evt: PointerEvent) => this.stopDraggingValue(evt, "Q")}
           @pointermove=${(evt: PointerEvent) => this.dragValue(evt, "Q")}
         />
+        <div class =  "knob"  style = "transform: rotate(${qDegree}deg)"></div>
+        </div>
       </td>
+        
+      
     `;
   }
 
+  
+  
   private get nyquist() {
     return (this.runtime?.audioCtx.sampleRate ?? 48000) / 2;
   }
@@ -323,6 +401,7 @@ export class EQUIFilterRowElement extends LitElement {
     if (!this.runtime || this.index === undefined) return;
     if (!isNaN(frequency)) {
       this.runtime.setFilterFrequency(this.index, frequency);
+   //   this.frequencyToDegree(frequency);
     }
   }
 
@@ -330,6 +409,7 @@ export class EQUIFilterRowElement extends LitElement {
     if (!this.runtime || this.index === undefined) return;
     if (!isNaN(gain)) {
       this.runtime.setFilterGain(this.index, gain);
+   //   this.gainToDegree(gain);
     }
   }
 
@@ -337,6 +417,7 @@ export class EQUIFilterRowElement extends LitElement {
     if (!this.runtime || this.index === undefined) return;
     if (!isNaN(Q)) {
       this.runtime.setFilterQ(this.index, Q);
+    //  this.qToDegree(Q);
     }
   }
 
@@ -399,4 +480,29 @@ export class EQUIFilterRowElement extends LitElement {
       (evt.target as HTMLInputElement).blur();
     }
   }
+
+
+    private valueToDegree(value: number, min: number, max: number, maxRotation: number = 270): number {
+      const normalized = (value - min) / (max - min);
+      return normalized * maxRotation; 
+    }
+
+    private frequencyToDegree(frequency: number): number {
+      console.log("called");
+      return this.valueToDegree(frequency, frequencyRange.min, frequencyRange.max) - 125;
+      
+    }
+
+  private gainToDegree(gain: number): number {
+      return this.valueToDegree(gain, gainRange.min, gainRange.max) -135 ;
+    }
+
+  private qToDegree(Q: number): number {
+
+      return this.valueToDegree(Q, qRange.min, qRange.max) - 135 ;
+    }
+
+
+
+
 }

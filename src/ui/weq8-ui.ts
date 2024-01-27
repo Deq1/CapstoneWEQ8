@@ -11,6 +11,7 @@ import { clamp, filterHasGain, toLin, toLog10 } from "../functions";
 
 import "./weq8-ui-filter-row";
 import "./weq8-ui-filter-hud";
+import "./weq8-ui-filter-knob";
 
 
 
@@ -530,22 +531,48 @@ resetEQ(){
          </tr>
       </thead>
       <tbody>
-        ${Array.from({ length: 8 }).map(
-          (_, i) =>
-            html`<weq8-ui-filter-row
-              class="${classMap({ selected: this.selectedFilterIdx === i })}"
-              .runtime=${this.runtime}
-              .index=${i}
-              @select=${(evt: CustomEvent) => {
-                this.selectedFilterIdx =
-                  this.runtime?.spec[i].type === "noop" ? -1 : i;
-                evt.stopPropagation();
-              }}
-            />`
-        )}
+      ${Array.from({ length: 8 }).map(
+        (_, i) => 
+          html`<weq8-ui-filter-row
+            class="${classMap({ selected: this.selectedFilterIdx === i })}"
+            .runtime=${this.runtime}
+            .index=${i}
+            @select=${(evt: CustomEvent) => {
+              this.selectedFilterIdx =
+                this.runtime?.spec[i].type === "noop" ? -1 : i;
+              evt.stopPropagation();
+            }}
+          />`
+          
+      )}
       </tbody>
     </table>`;
   }
+
+
+
+
+
+
+
+  
+
+  // private renderTable() {
+  //   return html` <table  class="filters">
+  //     <thead>
+  //         <tr>
+  //           <th class ="headerFilter">Filter</th>
+  //           <th class = "headerFreq">Freq</th>
+  //           <th class = "headerGain">Gain</th>
+  //           <th class = "headerQ">Q</th>
+  //        </tr>
+  //     </thead>
+  //     <tbody>
+     
+  //   </tbody>
+  //   </table>`;
+  // }
+
 
   private renderFilterHUD() {
     if (!this.runtime) return html``;
@@ -587,37 +614,36 @@ resetEQ(){
 
 
 
-  
+  /*
+  private renderFilterHandle(spec: WEQ8Filter, idx: number) {
+    if (!this.runtime) return;
+    let [x, y] = this.getFilterPositionInVisualisation(spec);
+    return html`<div
+      class="filter-handle-positioner"
+      style="transform: translate(${x}px,${y}px)"
+      @pointerdown=${(evt: PointerEvent) =>
+        this.startDraggingFilterHandle(evt, idx)}
+      @pointerup=${(evt: PointerEvent) =>
+        this.stopDraggingFilterHandle(evt, idx)}
+      @pointermove=${(evt: PointerEvent) => this.dragFilterHandle(evt, idx)}
+    >
+      <div
+        class="${classMap({
+          "filter-handle": true,
+          bypassed: spec.bypass,
+          selected: idx === this.selectedFilterIdx,
+        })}"
+      >
+        ${idx + 1}
+      </div>
+    </div>`;
+  }
+    Show function positioner  
 
-  // private renderFilterHandle(spec: WEQ8Filter, idx: number) {
-  //   if (!this.runtime) return;
-  //   let [x, y] = this.getFilterPositionInVisualisation(spec);
-  //   return html`<div
-  //     class="filter-handle-positioner"
-  //     style="transform: translate(${x}px,${y}px)"
-  //     @pointerdown=${(evt: PointerEvent) =>
-  //       this.startDraggingFilterHandle(evt, idx)}
-  //     @pointerup=${(evt: PointerEvent) =>
-  //       this.stopDraggingFilterHandle(evt, idx)}
-  //     @pointermove=${(evt: PointerEvent) => this.dragFilterHandle(evt, idx)}
-  //   >
-  //     <div
-  //       class="${classMap({
-  //         "filter-handle": true,
-  //         bypassed: spec.bypass,
-  //         selected: idx === this.selectedFilterIdx,
-  //       })}"
-  //     >
-  //       ${idx + 1}
-  //     </div>
-  //   </div>`;
-  // }
+*/
 
 
-
-
-  // renderFilterHandle() disabled the filter handlers 
-  
+ 
   private renderFilterHandle(spec: WEQ8Filter, idx: number) {
     if (!this.runtime) return;
     let [x, y] = this.getFilterPositionInVisualisation(spec);

@@ -16,6 +16,7 @@
 export type WEQ8Spec = [
   WEQ8Filter,
   WEQ8Filter,
+  WEQ8Filter,
   WEQ8Filter
 ];
 
@@ -81,6 +82,7 @@ export type WEQ8Filter = {
 export const DEFAULT_SPEC: WEQ8Spec = [
   { type: "lowshelf12", frequency: 30, gain: 0, Q: 0.7, bypass: false },
   { type: "peaking12", frequency: 200, gain: 0, Q: 0.7, bypass: false },
+  { type: "peaking12", frequency: 1000, gain: 0, Q: 0.7, bypass: false },
   { type: "highshelf12", frequency: 5000, gain: 0, Q: 0.7, bypass: false },
 ];
 
