@@ -614,7 +614,7 @@ resetEQ(){
 
 
 
-  /*
+   
   private renderFilterHandle(spec: WEQ8Filter, idx: number) {
     if (!this.runtime) return;
     let [x, y] = this.getFilterPositionInVisualisation(spec);
@@ -638,18 +638,18 @@ resetEQ(){
       </div>
     </div>`;
   }
-    Show function positioner  
+    
 
-*/
+
 
 
  
-  private renderFilterHandle(spec: WEQ8Filter, idx: number) {
-    if (!this.runtime) return;
-    let [x, y] = this.getFilterPositionInVisualisation(spec);
-    return null;
+  // private renderFilterHandle(spec: WEQ8Filter, idx: number) {
+  //   if (!this.runtime) return;
+  //   let [x, y] = this.getFilterPositionInVisualisation(spec);
+  //   return null;
 
-  }
+  // }
 
 
 
