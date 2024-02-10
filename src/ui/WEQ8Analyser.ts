@@ -14,27 +14,57 @@ export class WEQ8Analyser {
     this.analyser.smoothingTimeConstant = 0.5;
     runtime.connect(this.analyser);
     this.analysisData = new Uint8Array(this.analyser.frequencyBinCount);
-
-    let maxLog = Math.log10(runtime.audioCtx.sampleRate / 2) - 1;
+    
+   // let minLog = Math.log10(20);
+   // let maxLog = Math.log10(runtime.audioCtx.sampleRate / 2) - 1;
+   let minFreq = 20;
+   let maxFreq = 20000;
 
     this.canvas.width = this.canvas.offsetWidth * window.devicePixelRatio;
     this.canvas.height = this.canvas.offsetHeight * window.devicePixelRatio;
-    this.analysisXs = this.calculateAnalysisXs(maxLog);
+    this.analysisXs = this.calculateAnalysisXs(minFreq,maxFreq);
     this.resizeObserver = new ResizeObserver(() => {
       this.canvas.width = this.canvas.offsetWidth * window.devicePixelRatio;
       this.canvas.height = this.canvas.offsetHeight * window.devicePixelRatio;
-      this.analysisXs = this.calculateAnalysisXs(maxLog);
+      this.analysisXs = this.calculateAnalysisXs(minFreq, maxFreq);
     });
     this.resizeObserver.observe(this.canvas);
   }
 
-  private calculateAnalysisXs(maxLog: number): number[] {
+  // private calculateAnalysisXs(maxLog: number): number[] {  
+  //   return Array.from(this.analysisData).map((_, i) => {
+  //     let freq =
+  //       (i / this.analysisData.length) * (this.runtime.audioCtx.sampleRate / 2);
+  //     return Math.floor(((Math.log10(freq) - 1) / maxLog) * this.canvas.width);
+  //   });
+  // }
+
+
+  private calculateAnalysisXs(minFreq: number, maxFreq: number): number[] {
+    // Define the minimum and maximum log frequencies
+    let minLogFreq = Math.log10(minFreq); // log10 of 20 Hz
+    let maxLogFreq = Math.log10(maxFreq); // log10 of 20 kHz
+
+    // Adjust the maxLog value to represent the log10 of 20kHz
+    // maxLog = maxLogFreq - 1; 
+
     return Array.from(this.analysisData).map((_, i) => {
-      let freq =
-        (i / this.analysisData.length) * (this.runtime.audioCtx.sampleRate / 2);
-      return Math.floor(((Math.log10(freq) - 1) / maxLog) * this.canvas.width);
+      // Convert bin index to frequency
+      let freq = (i / this.analysisData.length) * (this.runtime.audioCtx.sampleRate / 2);
+
+      // Check if frequency is within the desired range before mapping
+      if (freq < minFreq) {
+        return 0; // Position at the start of the canvas
+      } else if (freq > maxFreq) {
+        return this.canvas.width; // Position at the end of the canvas
+      } else {
+        // Scale frequency to fit within the 20Hz to 20kHz range
+        let logFreq = Math.log10(freq);
+        return Math.floor(((logFreq - minLogFreq) / (maxLogFreq - minLogFreq)) * this.canvas.width);
+      }
     });
   }
+
 
   analyse() {
     let frame = () => {

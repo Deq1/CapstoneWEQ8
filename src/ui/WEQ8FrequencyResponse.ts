@@ -79,7 +79,7 @@ export class WEQ8FrequencyResponse {
   private calculateFrequencies(): Float32Array {
     let frequencies = new Float32Array(this.canvas.width);
     let nyquist = this.runtime.audioCtx.sampleRate / 2;
-    let minLog = 1;
+    let minLog = Math.log10(20);
     let maxLog = Math.log10(nyquist);
     for (let x = 0; x < this.canvas.width; x++) {
       let log = minLog + (x / this.canvas.width) * (maxLog - minLog);

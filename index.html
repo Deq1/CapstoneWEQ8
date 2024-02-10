@@ -42,7 +42,7 @@
       let runtime = new WEQ8Runtime(audioctx);
       runtime.connect(audioctx.destination);
 
-      fetch("/testloop.m4a")
+      fetch("/test2.m4a")
         .then((res) => res.arrayBuffer())
         .then((buf) => audioctx.decodeAudioData(buf))
         .then((buf) => {
