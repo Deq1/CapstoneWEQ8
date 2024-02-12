@@ -75,7 +75,7 @@ export class EQUIFilterRowElement extends LitElement {
         background: #ffcc00;
       }
       .chip.disabled:hover {
-        background: #444444;
+        background: #44ffff;
       }
       .filterNumber {
         cursor: pointer;

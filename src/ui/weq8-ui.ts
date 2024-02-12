@@ -161,7 +161,24 @@ export class WEQ8UIElement extends LitElement {
   }
   .filter-handle.bypassed {
     background: #696969;
-  }` ,
+  }
+  
+
+
+  button {
+    background-color: #696969; 
+    color: white; 
+    padding: 4.5px 8px;
+    border: ;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+  }
+
+
+  
+  ` ,
   ];
 
 
@@ -323,6 +340,8 @@ private deletePresetList() {
       const dropdown = document.createElement('select');
       dropdown.innerHTML = `<option disabled selected>Select a Preset</option>`;
 
+      
+
       // Append options for each preset
       presetNames.forEach(presetName => {
           const option = document.createElement('option');
@@ -331,9 +350,11 @@ private deletePresetList() {
           dropdown.appendChild(option);
       });
 
+
       // Handle preset selection
       dropdown.addEventListener('change', () => {
           if (this.runtime && dropdown.value) {
+
              
               // deleteSpec test
               this.runtime?.deleteSpec(dropdown.value); 
@@ -472,7 +493,7 @@ resetEQ(){
   
     return html`
     <div>
-        <button @click=${this.toggleUiVisible}>
+        <button @click=${this.toggleUiVisible} class = "hide-eq-btn">
             ${this.isUiVisible ? 'Hide the EQ' : 'Show the EQ'}
         </button>
 
@@ -616,41 +637,41 @@ resetEQ(){
 
 
    
-  private renderFilterHandle(spec: WEQ8Filter, idx: number) {
-    if (!this.runtime) return;
-    let [x, y] = this.getFilterPositionInVisualisation(spec);
-    return html`<div
-      class="filter-handle-positioner"
-      style="transform: translate(${x}px,${y}px)"
-      @pointerdown=${(evt: PointerEvent) =>
-        this.startDraggingFilterHandle(evt, idx)}
-      @pointerup=${(evt: PointerEvent) =>
-        this.stopDraggingFilterHandle(evt, idx)}
-      @pointermove=${(evt: PointerEvent) => this.dragFilterHandle(evt, idx)}
-    >
-      <div
-        class="${classMap({
-          "filter-handle": true,
-          bypassed: spec.bypass,
-          selected: idx === this.selectedFilterIdx,
-        })}"
-      >
-        ${idx + 1}
-      </div>
-    </div>`;
-  }
+  // private renderFilterHandle(spec: WEQ8Filter, idx: number) {
+  //   if (!this.runtime) return;
+  //   let [x, y] = this.getFilterPositionInVisualisation(spec);
+  //   return html`<div
+  //     class="filter-handle-positioner"
+  //     style="transform: translate(${x}px,${y}px)"
+  //     @pointerdown=${(evt: PointerEvent) =>
+  //       this.startDraggingFilterHandle(evt, idx)}
+  //     @pointerup=${(evt: PointerEvent) =>
+  //       this.stopDraggingFilterHandle(evt, idx)}
+  //     @pointermove=${(evt: PointerEvent) => this.dragFilterHandle(evt, idx)}
+  //   >
+  //     <div
+  //       class="${classMap({
+  //         "filter-handle": true,
+  //         bypassed: spec.bypass,
+  //         selected: idx === this.selectedFilterIdx,
+  //       })}"
+  //     >
+  //       ${idx + 1}
+  //     </div>
+  //   </div>`;
+  // }
     
 
 
 
 
  
-  // private renderFilterHandle(spec: WEQ8Filter, idx: number) {
-  //   if (!this.runtime) return;
-  //   let [x, y] = this.getFilterPositionInVisualisation(spec);
-  //   return null;
+  private renderFilterHandle(spec: WEQ8Filter, idx: number) {
+    if (!this.runtime) return;
+    let [x, y] = this.getFilterPositionInVisualisation(spec);
+    return null;
 
-  // }
+  }
 
 
 

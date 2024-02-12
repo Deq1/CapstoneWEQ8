@@ -29,11 +29,20 @@ export class WEQ8Runtime {
   // ];
 
 
-  private FIXED_SPEC:WEQ8Spec = [
+  private DEFAULT_FIXED_SPEC:WEQ8Spec = [
     { type: "lowshelf12", frequency: 30, gain: 0, Q: 0.7, bypass: false },
     { type: "peaking12", frequency: 200, gain: 0, Q: 0.7, bypass: false },
     { type: "peaking12", frequency: 1000, gain: 0, Q: 0.7, bypass: false },
     { type: "highshelf12", frequency: 5000, gain: 0, Q: 0.7, bypass: false }, 
+  ];
+
+
+  private LOW_FREQ_BOOST: WEQ8Spec = [
+    { type: "peaking12", frequency: 48, gain: 8.1, Q: 0.47, bypass: false },
+    { type: "peaking12", frequency: 200, gain: 0, Q: 0.7, bypass: false },
+    { type: "peaking12", frequency: 1000, gain: 0, Q: 0.7, bypass: false },
+    { type: "highshelf12", frequency: 5000, gain: 0, Q: 0.7, bypass: false }, 
+
   ];
 
 
@@ -42,9 +51,10 @@ export class WEQ8Runtime {
 
 
 
-  private presets: { [name: string ]: WEQ8Spec } = {}; 
+  private presets: { [name: string ]: {spec: WEQ8Spec, isPreconfigured: boolean }} =
+   { "Low Freq Boost": {spec:this.LOW_FREQ_BOOST, isPreconfigured: true } }; 
 
-  private presetNames: string[] = [];
+  private presetNames: string[] = [ "Low Freq Boost" ];
   
 
   constructor(
@@ -316,7 +326,7 @@ export class WEQ8Runtime {
   
   
   resetFilters(): void {
-   this.setFilterSpec(this.FIXED_SPEC);
+   this.setFilterSpec(this.DEFAULT_FIXED_SPEC);
   }
 
 
@@ -331,25 +341,25 @@ export class WEQ8Runtime {
 
 
    saveSpec(name:string ):void {
-     this.presets[name] = JSON.parse(JSON.stringify(this.getCurrentSpec()));
+     this.presets[name] = {spec:JSON.parse(JSON.stringify(this.getCurrentSpec())), isPreconfigured: false};
      this.updatePresetNames();
    }
 
 
    loadSpec(name:string):void {
-     const preset = this.presets[name];
+     const presetSpec = this.presets[name].spec;
 
 
-     if(!preset) {
+     if(!presetSpec) {
       throw new Error(`Preset "${name}" not found`);
      } 
 
 
-    preset.forEach(filter => {
-      console.log(`Type: ${filter.type}, Frequency: ${filter.frequency}, Gain: ${filter.gain}, Q: ${filter.Q}`);
-    });
+    // preset.forEach(filter => {
+    //   console.log(`Type: ${filter.type}, Frequency: ${filter.frequency}, Gain: ${filter.gain}, Q: ${filter.Q}`);
+    // });
     
-    this.setFilterSpec(preset);
+    this.setFilterSpec(presetSpec);
    } 
    
 
@@ -369,13 +379,16 @@ export class WEQ8Runtime {
 
    if(!this.presets[name]) {
     console.warn(`Preset "${name}" not found.`);
+    return;
    } 
-   else {
+   
+   if(this.presets[name].isPreconfigured){
+   alert(`Preset "${name}" is pre-configured and cannot be deleted`);
+      return;
+   }
+  
      delete this.presets[name];
      this.updatePresetNames();  
    }
-
-   }
-   
   
 }
