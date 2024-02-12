@@ -241,9 +241,6 @@ export class EQUIFilterRowElement extends LitElement {
     let spec = this.runtime.spec[this.index];
 
 
-    const frequencyDegree = this.frequencyToDegree(spec.frequency);
-    const gainDegree = this.gainToDegree(spec.gain);
-    const qDegree = this.qToDegree(spec.Q);
 
     return html`
       <th>
@@ -294,14 +291,7 @@ export class EQUIFilterRowElement extends LitElement {
             this.frequencyInputFocused = false;
             this.setFilterFrequency(clamp(spec.frequency, 10, this.nyquist));
           }}
-          @input=${(evt: { target: HTMLInputElement }) =>
-          this.setFilterFrequency(evt.target.valueAsNumber)}
-          @pointerdown=${(evt: PointerEvent) =>
-            this.startDraggingValue(evt, "frequency")}
-          @pointerup=${(evt: PointerEvent) =>
-            this.stopDraggingValue(evt, "frequency")}
-          @pointermove=${(evt: PointerEvent) =>
-            this.dragValue(evt, "frequency")}
+        
         />
         <span
           class=${classMap({
@@ -314,7 +304,17 @@ export class EQUIFilterRowElement extends LitElement {
             this.frequencyInputFocused
           )}</span
         >
-        <div class="knob" style="transform: rotate(${frequencyDegree}deg)"></div>
+        <div class="knob" 
+        @input=${(evt: { target: HTMLInputElement }) =>
+        this.setFilterFrequency(evt.target.valueAsNumber)}
+        @pointerdown=${(evt: PointerEvent) =>
+          this.startDraggingValue(evt, "frequency")}  
+        @pointerup=${(evt: PointerEvent) =>
+            this.stopDraggingValue(evt, "frequency")}
+        @pointermove=${(evt: PointerEvent) =>
+              this.dragValue(evt, "frequency")}
+          style="transform: rotate(${this.frequencyToDegree(spec.frequency)}deg)">
+          </div>
       </td>
       <td>
         <input
@@ -330,13 +330,7 @@ export class EQUIFilterRowElement extends LitElement {
           lang="en_EN"
           .value=${spec.gain.toFixed(1)}
           ?disabled=${!filterHasGain(spec.type)}
-          @input=${(evt: { target: HTMLInputElement }) =>
-            this.setFilterGain(evt.target.valueAsNumber)}
-          @pointerdown=${(evt: PointerEvent) =>
-            this.startDraggingValue(evt, "gain")}
-          @pointerup=${(evt: PointerEvent) =>
-            this.stopDraggingValue(evt, "gain")}
-          @pointermove=${(evt: PointerEvent) => this.dragValue(evt, "gain")}
+        
         />
         <span
           class=${classMap({
@@ -346,7 +340,15 @@ export class EQUIFilterRowElement extends LitElement {
           })}
           >dB</span
         >
-        <div class =  "knob"  style = "transform: rotate(${gainDegree}deg)"></div>
+        <div class =  "knob"       
+      @input=${(evt: { target: HTMLInputElement }) =>
+        this.setFilterGain(evt.target.valueAsNumber)}
+      @pointerdown=${(evt: PointerEvent) =>
+        this.startDraggingValue(evt, "gain")}
+      @pointerup=${(evt: PointerEvent) =>
+        this.stopDraggingValue(evt, "gain")}
+      @pointermove=${(evt: PointerEvent) => this.dragValue(evt, "gain")}  
+        style = "transform: rotate(${this.gainToDegree(spec.gain)}deg)"></div>
          
         </div>
       </td>
@@ -363,14 +365,16 @@ export class EQUIFilterRowElement extends LitElement {
           step="0.1"
           .value=${spec.Q.toFixed(2)}
           ?disabled=${!filterHasQ(spec.type)}
-          @input=${(evt: { target: HTMLInputElement }) =>
-            this.setFilterQ(evt.target.valueAsNumber)}
-          @pointerdown=${(evt: PointerEvent) =>
-            this.startDraggingValue(evt, "Q")}
-          @pointerup=${(evt: PointerEvent) => this.stopDraggingValue(evt, "Q")}
-          @pointermove=${(evt: PointerEvent) => this.dragValue(evt, "Q")}
+         
         />
-        <div class =  "knob"  style = "transform: rotate(${qDegree}deg)"></div>
+        <div class =  "knob"
+        @input=${(evt: { target: HTMLInputElement }) =>
+        this.setFilterQ(evt.target.valueAsNumber)}
+       @pointerdown=${(evt: PointerEvent) =>
+        this.startDraggingValue(evt, "Q")}
+       @pointerup=${(evt: PointerEvent) => this.stopDraggingValue(evt, "Q")}
+       @pointermove=${(evt: PointerEvent) => this.dragValue(evt, "Q")}
+          style = "transform: rotate(${this.qToDegree(spec.Q)}deg)"></div>
         </div>
       </td>
         
@@ -501,6 +505,13 @@ export class EQUIFilterRowElement extends LitElement {
 
       return this.valueToDegree(Q, qRange.min, qRange.max) - 135 ;
     }
+
+
+
+///////////////////////////////////////////////////////////////////
+
+
+
 
 
 
