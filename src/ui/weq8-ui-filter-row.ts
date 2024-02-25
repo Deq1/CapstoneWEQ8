@@ -177,67 +177,6 @@ export class EQUIFilterRowElement extends LitElement {
     
 
 
-    #slider-container {
-      height: 200px; /* Adjust based on your preference */
-      display: flex;
-     flex-direction: column;
-      justify-content: center;
-      background-color: #1E1E1E; /* Even darker shade for the container */
-      padding: 0.5px;
-      border-radius: 5px; /* Rounded corners for the container */
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3); /* More pronounced shadow for depth */
-    }
-    
-    .slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%; /* Full container width */
-      height: 5px; /* Slider thickness */
-      background: #333; /* Darker slider track */
-      outline: none;
-      opacity: 0.8; /* Slightly more opacity */
-      -webkit-transition: .2s; /* Smooth transition for hover effects */
-      transition: opacity .2s;
-      transform: rotate(270deg); /* Rotates slider to vertical position */
-      border-radius: 5px; /* Rounded corners for the slider */
-    }
-    
-    .slider:hover {
-      opacity: 1; /* Full opacity on hover */
-    }
-    
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 25px; /* Handle width */
-      height: 25px; /* Handle height */
-      background: #520a96; /* Handle color, can be adjusted for darker themes */
-      cursor: pointer;
-      border-radius: 50%; /* Rounded handle for a modern look */
-      box-shadow: 0 2px 4px 0 rgba(0,0,0,0.4); /* Deeper shadow for the handle */
-      border: none; /* Optional: remove border for a sleeker look */
-    }
-    
-    .slider::-moz-range-thumb {
-      width: 25px;
-      height: 25px;
-      background: #4CAF50;
-      cursor: pointer;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px 0 rgba(0,0,0,0.4);
-      border: none;
-    }
-    
-    .slider::-webkit-slider-runnable-track {
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.5); /* Inner shadow for added depth */
-    }
-    
-    .slider::-moz-range-track {
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-    }
-
-   
-
     `,
   ];
 

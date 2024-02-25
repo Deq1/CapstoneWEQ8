@@ -10,8 +10,8 @@ import { sharedStyles } from "./styles";
 import { clamp, filterHasGain, toLin, toLog10 } from "../functions";
 
 import "./weq8-ui-filter-row";
-import "./weq8-ui-filter-hud";
-import "./weq8-ui-filter-knob";
+// import "./weq8-ui-filter-hud";
+
 
 
 
@@ -177,6 +177,48 @@ export class WEQ8UIElement extends LitElement {
 
   }
 
+
+  .slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 5px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+ 
 
   
   ` ,
@@ -491,54 +533,44 @@ resetEQ(){
 
 
   render() {
-  
     return html`
-    <div>
-        <button @click=${this.toggleUiVisible} class = "hide-eq-btn">
-            ${this.isUiVisible ? 'Hide the EQ' : 'Show the EQ'}
-        </button>
-
-        ${this.isUiVisible ? html`
         <div>
-                     <button @click=${this.toggleRawAudio}>
-                    ${this.showRawAudio ? 'Output Signal' : 'Input Signal'}
-                     </button>
+            <button @click=${this.toggleUiVisible} class="hide-eq-btn">
+                ${this.isUiVisible ? 'Hide the EQ' : 'Show the EQ'}
+            </button>
 
-              <div class="preset-controls">
-                     <button @click=${this.resetEQ}>Reset EQ</button>
-                     <button @click=${this.savePreset}>Save Preset</button>
-                     <button @click= ${this.loadPresetList}>Load Preset</button>
-        
-                     <button @click=${this.deletePresetList}>Delete Preset</button>
+            ${this.isUiVisible ? html`
+                <div>
+                    <button @click=${this.toggleRawAudio}>
+                        ${this.showRawAudio ? 'Output Signal' : 'Input Signal'}
+                    </button>
+                    <div class="preset-controls">
+                        <button @click=${this.resetEQ}>Reset EQ</button>
+                        <button @click=${this.savePreset}>Save Preset</button>
+                        <button @click=${this.loadPresetList}>Load Preset</button>
+                        <button @click=${this.deletePresetList}>Delete Preset</button>
+                        <div id="presetListContainer"></div>
+                    </div>
+                </div>
+                <div class="visualisation">
+                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                        ${this.gridXs.map(this.renderGridX)}
+                        ${[12, 6, 0, -6, -12].map(this.renderGridY)}
+                    </svg>
+                    ${this.showRawAudio ? html`<canvas class="RawAnalyser"></canvas>` : ''}
+                    <canvas class="analyser"></canvas>
+                    <canvas class="frequencyResponse" @click=${() => (this.selectedFilterIdx = -1)}></canvas>
+                    ${this.runtime?.spec.map((s, i) => s.type === "noop" ? undefined : this.renderFilterHandle(s, i))}
+                    ${this.view === "hud" && this.selectedFilterIdx !== -1 ? this.renderFilterHUD() : null}
+                </div>
+                ${this.view === "allBands" ? this.renderTable() : null}
+            ` : ''}
+        <div class = "slider-container" >
+        <input type="range" min="-100" max="100" value="0" class="slider" @input=${this.handleSliderInput}>
+        </div>
 
-              
-                     
-                   <div id = "presetListContainer"></div>
-              </div>
-         </div>
+        </div>
 
-
-
-         
-       </div>
-
-            <div class="visualisation">
-                <svg viewBox="0 0 100 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                     ${this.gridXs.map(this.renderGridX)}
-                     ${[12, 6, 0, -6, -12].map(this.renderGridY)}
-                </svg>
-
-                
-                
-                ${this.showRawAudio ? html`<canvas class="RawAnalyser"></canvas>` : ''}
-                <canvas class="analyser"></canvas>
-                <canvas class="frequencyResponse" @click=${() => (this.selectedFilterIdx = -1)}></canvas>
-
-                ${this.runtime?.spec.map((s, i) => s.type === "noop" ? undefined : this.renderFilterHandle(s, i))}
-                ${this.view === "hud" && this.selectedFilterIdx !== -1 ? this.renderFilterHUD() : null} 
-            </div>
-            ${this.view === "allBands" ? this.renderTable() : null}
-        ` : ''}
     `;
 }
 
@@ -672,9 +704,9 @@ resetEQ(){
 
  
   private renderFilterHandle(spec: WEQ8Filter, idx: number) {
-    if (!this.runtime) return;
-    let [x, y] = this.getFilterPositionInVisualisation(spec);
-    return null;
+   if (!this.runtime) return;
+  //  let [x, y] = this.getFilterPositionInVisualisation(spec);
+  //   return null;
 
   }
 
@@ -738,4 +770,13 @@ resetEQ(){
       }
     }
   }
+
+
+handleSliderInput(event:Event) {
+
+  let target = event.target as HTMLInputElement;
+  let newValue = Number(target.value);
+  this.runtime?.setVolume(newValue/100);
+}
+  
 }

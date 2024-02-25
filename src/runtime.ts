@@ -96,6 +96,7 @@ export class WEQ8Runtime {
 
   setVolume(level: number ):void {
    this.volumeControl.gain.value = level;
+   console.log(this.volumeControl.gain.value);
    this.emitter.emit("volumeChanged", level);
   }
 
