@@ -12,6 +12,7 @@ export class WEQ8Runtime {
   public readonly input: AudioNode;
   private readonly output: AudioNode;
   private  volumeNode: GainNode;
+  private Compressor: DynamicsCompressorNode;
   
 
   private filterbank: { idx: number; filters: BiquadFilterNode[] }[] = [];
@@ -57,13 +58,19 @@ export class WEQ8Runtime {
   ) {
     this.input = audioCtx.createGain();
     this.output = audioCtx.createGain();
-   
     this.volumeNode = audioCtx.createGain();
+    this.Compressor = audioCtx.createDynamicsCompressor();   
+   
+  
     this.input.connect(this.volumeNode);
     this.volumeNode.connect(this.output);
+   
   
     this.buildFilterChain(spec);
     this.emitter = createNanoEvents();
+
+
+    this.setVolume(0);
   }
 
   connect(node: AudioNode): void {
@@ -96,7 +103,7 @@ export class WEQ8Runtime {
 
   setVolume(level: number ):void {
    this.volumeNode.gain.value = level;
-   console.log(this.volumeNode.gain.value);
+  // console.log(this.volumeNode.gain.value);
    this.emitter.emit("volumeChanged", level);
   }
 
@@ -341,6 +348,7 @@ export class WEQ8Runtime {
   
   resetFilters(): void {
    this.setFilterSpec(this.DEFAULT_FIXED_SPEC);
+
   }
 
 

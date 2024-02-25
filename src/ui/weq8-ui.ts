@@ -566,7 +566,7 @@ resetEQ(){
                 ${this.view === "allBands" ? this.renderTable() : null}
             ` : ''}
              <div class = "slider-container" >
-                <input type="range" min="-100" max="200" value="0" class="slider" @input=${this.handleSliderInput}>
+                <input type="range" min="-100" max="100" value="0" class="slider" @input=${this.handleSliderInput}>
                 <span id = "sliderValue">50</span>    
            </div>
 
@@ -782,7 +782,7 @@ handleSliderInput(event:Event) {
   const mapValueToDisplay = (value: number , in_min: number , in_max: number , out_min: number , out_max: number ) =>
   ((value - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 
-const displayValue = mapValueToDisplay(newValue, -100, 200, 0, 100);
+const displayValue = mapValueToDisplay(newValue, -100, 100, 0 ,100);
 
   const sliderValueDisplay = this.shadowRoot?.querySelector('#sliderValue');
   if (sliderValueDisplay) {
