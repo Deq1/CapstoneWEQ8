@@ -111,6 +111,7 @@ export class WEQ8UIElement extends LitElement {
     position: relative;
     border: 1px solid #373737;
     min-height:400px;
+    
      
    
   }
@@ -517,23 +518,27 @@ resetEQ(){
          </div>
 
 
+
+         
        </div>
 
             <div class="visualisation">
                 <svg viewBox="0 0 100 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                    ${this.gridXs.map(this.renderGridX)}
-                    ${[12, 6, 0, -6, -12].map(this.renderGridY)}
+                     ${this.gridXs.map(this.renderGridX)}
+                     ${[12, 6, 0, -6, -12].map(this.renderGridY)}
                 </svg>
+
+                
+                
                 ${this.showRawAudio ? html`<canvas class="RawAnalyser"></canvas>` : ''}
                 <canvas class="analyser"></canvas>
                 <canvas class="frequencyResponse" @click=${() => (this.selectedFilterIdx = -1)}></canvas>
+
                 ${this.runtime?.spec.map((s, i) => s.type === "noop" ? undefined : this.renderFilterHandle(s, i))}
-                ${this.view === "hud" && this.selectedFilterIdx !== -1 ? this.renderFilterHUD() : null}
+                ${this.view === "hud" && this.selectedFilterIdx !== -1 ? this.renderFilterHUD() : null} 
             </div>
             ${this.view === "allBands" ? this.renderTable() : null}
         ` : ''}
-
-  
     `;
 }
 

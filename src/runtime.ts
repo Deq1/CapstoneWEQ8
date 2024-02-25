@@ -4,29 +4,22 @@ import { getBiquadFilterOrder, getBiquadFilterType } from "./functions";
 
 interface WEQ8Events {
   filtersChanged: (spec: WEQ8Spec) => void;
+
+  volumeChanged: (level: number ) => void;
   
 }
 export class WEQ8Runtime {
   public readonly input: AudioNode;
   private readonly output: AudioNode;
+  private volumeControl: GainNode;
+  
 
   private filterbank: { idx: number; filters: BiquadFilterNode[] }[] = [];
 
   private readonly emitter: Emitter<WEQ8Events>;
 
 
-  /*  presets try out    */
 
-  // private FIXED_SPEC:WEQ8Spec = [
-  //   { type: "lowshelf12", frequency: 30, gain: 0, Q: 0.7, bypass: false },
-  //   { type: "peaking12", frequency: 200, gain: 0, Q: 0.7, bypass: false },
-  //   { type: "peaking12", frequency: 1000, gain: 0, Q: 0.7, bypass: false },
-  //   { type: "highshelf12", frequency: 5000, gain: 0, Q: 0.7, bypass: false },
-  //   { type: "noop", frequency: 350, gain: 0, Q: 1, bypass: false },
-  //   { type: "noop", frequency: 350, gain: 0, Q: 1, bypass: false },
-  //   { type: "noop", frequency: 350, gain: 0, Q: 1, bypass: false },
-  //   { type: "noop", frequency: 350, gain: 0, Q: 1, bypass: false },
-  // ];
 
 
   private DEFAULT_FIXED_SPEC:WEQ8Spec = [
@@ -64,6 +57,11 @@ export class WEQ8Runtime {
   ) {
     this.input = audioCtx.createGain();
     this.output = audioCtx.createGain();
+   
+    this.volumeControl = audioCtx.createGain();
+    this.input.connect(this.volumeControl);
+    this.volumeControl.connect(this.output);
+  
     this.buildFilterChain(spec);
     this.emitter = createNanoEvents();
   }
@@ -78,6 +76,10 @@ export class WEQ8Runtime {
     this.input.connect(node);
   }
 
+
+
+
+
   /*     */
   
   disconnect(node: AudioNode): void {
@@ -90,6 +92,13 @@ export class WEQ8Runtime {
   ): Unsubscribe {
     return this.emitter.on(event, callback);
   }
+
+
+  setVolume(level: number ):void {
+   this.volumeControl.gain.value = level;
+   this.emitter.emit("volumeChanged", level);
+  }
+
 
   setFilterType(idx: number, type: FilterType | "noop"): void {
     if (
@@ -224,7 +233,7 @@ export class WEQ8Runtime {
       }
     }
     this.emitter.emit("filtersChanged", this.spec);
-    //console.log('setFilterGain Called');
+    console.log(this.volumeControl.gain.value);
   }
 
   getFrequencyResponse(
@@ -391,4 +400,11 @@ export class WEQ8Runtime {
      this.updatePresetNames();  
    }
   
+
+
+  
+
+
+
+
 }
