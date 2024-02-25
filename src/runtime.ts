@@ -11,7 +11,7 @@ interface WEQ8Events {
 export class WEQ8Runtime {
   public readonly input: AudioNode;
   private readonly output: AudioNode;
-  private volumeControl: GainNode;
+  private  volumeNode: GainNode;
   
 
   private filterbank: { idx: number; filters: BiquadFilterNode[] }[] = [];
@@ -58,9 +58,9 @@ export class WEQ8Runtime {
     this.input = audioCtx.createGain();
     this.output = audioCtx.createGain();
    
-    this.volumeControl = audioCtx.createGain();
-    this.input.connect(this.volumeControl);
-    this.volumeControl.connect(this.output);
+    this.volumeNode = audioCtx.createGain();
+    this.input.connect(this.volumeNode);
+    this.volumeNode.connect(this.output);
   
     this.buildFilterChain(spec);
     this.emitter = createNanoEvents();
@@ -95,9 +95,13 @@ export class WEQ8Runtime {
 
 
   setVolume(level: number ):void {
-   this.volumeControl.gain.value = level;
-   console.log(this.volumeControl.gain.value);
+   this.volumeNode.gain.value = level;
+   console.log(this.volumeNode.gain.value);
    this.emitter.emit("volumeChanged", level);
+  }
+
+  getVolume():number{
+    return this.volumeNode.gain.value;
   }
 
 
@@ -234,7 +238,7 @@ export class WEQ8Runtime {
       }
     }
     this.emitter.emit("filtersChanged", this.spec);
-    console.log(this.volumeControl.gain.value);
+    console.log(this.volumeNode.gain.value);
   }
 
   getFrequencyResponse(
