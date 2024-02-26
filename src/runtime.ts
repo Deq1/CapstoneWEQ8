@@ -1,6 +1,7 @@
 import { createNanoEvents, Emitter, Unsubscribe } from "nanoevents";
 import { WEQ8Spec, FilterType, DEFAULT_SPEC, FILTER_TYPES } from "./spec";
 import { getBiquadFilterOrder, getBiquadFilterType } from "./functions";
+import { state } from "lit/decorators";
 
 interface WEQ8Events {
   filtersChanged: (spec: WEQ8Spec) => void;
@@ -12,14 +13,17 @@ export class WEQ8Runtime {
   public readonly input: AudioNode;
   private readonly output: AudioNode;
   private  volumeNode: GainNode;
-  private Compressor: DynamicsCompressorNode;
+  private CompressorNode: DynamicsCompressorNode;
+  
   
 
   private filterbank: { idx: number; filters: BiquadFilterNode[] }[] = [];
 
   private readonly emitter: Emitter<WEQ8Events>;
 
+  private isCompressorConnected: boolean;
 
+  
 
 
 
@@ -31,13 +35,32 @@ export class WEQ8Runtime {
   ];
 
 
-  private LOW_FREQ_BOOST: WEQ8Spec = [
+  private Bass: WEQ8Spec = [
     { type: "peaking12", frequency: 48, gain: 8.1, Q: 0.47, bypass: false },
     { type: "peaking12", frequency: 200, gain: 0, Q: 0.7, bypass: false },
     { type: "peaking12", frequency: 1000, gain: 0, Q: 0.7, bypass: false },
     { type: "highshelf12", frequency: 5000, gain: 0, Q: 0.7, bypass: false }, 
 
   ];
+
+  private Voice: WEQ8Spec = [
+    { type: "lowshelf12", frequency: 43, gain: 0.8, Q: 0.7, bypass: false },
+    { type: "peaking12", frequency: 125, gain: -2.8, Q: 0.7, bypass: false },
+    { type: "peaking12", frequency: 1000, gain: 5.2, Q: 0.7, bypass: false },
+    { type: "highshelf12", frequency: 8400, gain: -4.0, Q: 0.7, bypass: false }, 
+
+  ];
+
+
+  private SoftBass: WEQ8Spec = [
+    { type: "lowshelf12", frequency: 30, gain: 3.4, Q: 0.7, bypass: false },
+    { type: "peaking12", frequency: 102, gain: 1.6, Q: 0.27, bypass: false },
+    { type: "peaking12", frequency: 1000, gain: -0.6, Q: 0.7, bypass: false },
+    { type: "highshelf12", frequency: 5500, gain: -1.7, Q: 0.7, bypass: false }, 
+  ];
+
+
+  
 
 
 
@@ -46,9 +69,11 @@ export class WEQ8Runtime {
 
 
   private presets: { [name: string ]: {spec: WEQ8Spec, isPreconfigured: boolean }} =
-   { "Low Freq Boost": {spec:this.LOW_FREQ_BOOST, isPreconfigured: true } }; 
+   { "Bass": {spec:this.Bass, isPreconfigured: true },
+     "Voice":{spec:this.Voice, isPreconfigured: true},
+    "Soft Bass":{spec:this.SoftBass, isPreconfigured: true} }; 
 
-  private presetNames: string[] = [ "Low Freq Boost" ];
+  private presetNames: string[] = [ "Bass", "Voice", "Soft Bass"];
   
 
   constructor(
@@ -58,9 +83,8 @@ export class WEQ8Runtime {
   ) {
     this.input = audioCtx.createGain();
     this.output = audioCtx.createGain();
-    this.volumeNode = audioCtx.createGain();
-    this.Compressor = audioCtx.createDynamicsCompressor();   
-   
+    this.volumeNode = audioCtx.createGain();  
+    this.CompressorNode = audioCtx.createDynamicsCompressor(); 
   
     this.input.connect(this.volumeNode);
     this.volumeNode.connect(this.output);
@@ -69,8 +93,9 @@ export class WEQ8Runtime {
     this.buildFilterChain(spec);
     this.emitter = createNanoEvents();
 
-
     this.setVolume(0);
+
+    this.isCompressorConnected = false;
   }
 
   connect(node: AudioNode): void {
@@ -109,6 +134,28 @@ export class WEQ8Runtime {
 
   getVolume():number{
     return this.volumeNode.gain.value;
+  }
+
+ 
+  toggleCompressorConnection() {
+     if(this.isCompressorConnected){
+      this.volumeNode.disconnect(this.CompressorNode);
+      this.CompressorNode.disconnect(this.output);
+      this.volumeNode.connect(this.output);
+      this.isCompressorConnected = false; // Update flag
+    } else {
+      this.volumeNode.disconnect(this.output);
+      this.volumeNode.connect(this.CompressorNode);
+      this.CompressorNode.connect(this.output);
+      this.isCompressorConnected = true; // Update flag
+
+    }
+
+  }
+
+
+  getCompressorState(): boolean {
+    return this.isCompressorConnected;
   }
 
 
@@ -332,6 +379,9 @@ export class WEQ8Runtime {
     return next;
   }
 
+
+
+  
 
 
   setFilterSpec(spec: WEQ8Spec)  {

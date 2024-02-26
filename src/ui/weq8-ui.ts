@@ -260,9 +260,10 @@ export class WEQ8UIElement extends LitElement {
 
   toggleUiVisible() {
     this.isUiVisible = !this.isUiVisible;
-    this.requestUpdate();
-  
+    this.requestUpdate(); 
   }
+
+
 
 
   @state()
@@ -274,6 +275,7 @@ export class WEQ8UIElement extends LitElement {
 
   @state()
   private isUiVisible = true;
+
 
   @state()
   private isPresetListVisible = false;
@@ -549,8 +551,15 @@ resetEQ(){
                         <button @click=${this.savePreset}>Save Preset</button>
                         <button @click=${this.loadPresetList}>Load Preset</button>
                         <button @click=${this.deletePresetList}>Delete Preset</button>
+
+                        <button @click=${this.toggleCompressor}>
+                            ${this.CompressorState() ? 'Disconnect Compressor' : 'Connect Compressor'}
+                        </button>
+
                         <div id="presetListContainer"></div>
                     </div>
+                
+              
                 </div>
                 <div class="visualisation">
                     <svg viewBox="0 0 100 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -792,5 +801,23 @@ const displayValue = mapValueToDisplay(newValue, -100, 100, 0 ,100);
   }
  
 }
+
+
+toggleCompressor(){
+    this.runtime?.toggleCompressorConnection();
+    this.requestUpdate();
+    console.log(this.CompressorState());
+
+}
+
+
+CompressorState() {
+  return this.runtime?.getCompressorState();
+
+}
+
+
+
+
   
 }
