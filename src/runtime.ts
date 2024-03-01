@@ -85,17 +85,17 @@ export class WEQ8Runtime {
     this.output = audioCtx.createGain();
     this.volumeNode = audioCtx.createGain();  
     this.CompressorNode = audioCtx.createDynamicsCompressor(); 
+
+    this.volumeNode.gain.value = 0;
   
     this.input.connect(this.volumeNode);
     this.volumeNode.connect(this.output);
-   
   
     this.buildFilterChain(spec);
     this.emitter = createNanoEvents();
-
-    this.setVolume(0);
-
     this.isCompressorConnected = false;
+
+    this.setVolume(0.5);
   }
 
   connect(node: AudioNode): void {
@@ -144,12 +144,25 @@ export class WEQ8Runtime {
       this.volumeNode.connect(this.output);
       this.isCompressorConnected = false; // Update flag
     } else {
+
+      /*  after EQ and volume*/ 
       this.volumeNode.disconnect(this.output);
       this.volumeNode.connect(this.CompressorNode);
+
+       this.CompressorNode.threshold.setValueAtTime(-30, this.audioCtx.currentTime);
+       this.CompressorNode.knee.setValueAtTime(40, this.audioCtx.currentTime);
+       this.CompressorNode.ratio.setValueAtTime(0.5, this.audioCtx.currentTime);
+       this.CompressorNode.attack.setValueAtTime(0.1, this.audioCtx.currentTime);
+       this.CompressorNode.release.setValueAtTime(0.6, this.audioCtx.currentTime);
       this.CompressorNode.connect(this.output);
+
       this.isCompressorConnected = true; // Update flag
 
-    }
+     /* before EQ and volume */
+
+      
+
+     }
 
   }
 
@@ -293,6 +306,7 @@ export class WEQ8Runtime {
     }
     this.emitter.emit("filtersChanged", this.spec);
     console.log(this.volumeNode.gain.value);
+   
   }
 
   getFrequencyResponse(
@@ -334,7 +348,8 @@ export class WEQ8Runtime {
       this.filterbank.push({ idx: i, filters });  
     }   
     if (this.filterbank.length === 0) {   
-      this.input.connect(this.output);  
+    //  this.input.connect(this.output);  
+    this.input.connect(this.volumeNode);
     } else {
       for (let i = 0; i < this.filterbank.length; i++) {
         let { filters } = this.filterbank[i];
@@ -349,7 +364,8 @@ export class WEQ8Runtime {
           filters[j].connect(filters[j + 1]);
         }
         if (i === this.filterbank.length - 1) {
-          filters[filters.length - 1].connect(this.output);
+         // filters[filters.length - 1].connect(this.output);
+         filters[filters.length - 1].connect(this.volumeNode);
         }
       }
     }
@@ -357,7 +373,7 @@ export class WEQ8Runtime {
 
   private getPreviousInChain(idx: number): AudioNode {
     let prev = this.input,
-      prevIndex = -1;
+          prevIndex = -1;
     for (let filter of this.filterbank) {
       if (filter.idx < idx && filter.idx > prevIndex) {
         prev = filter.filters[filter.filters.length - 1];
@@ -368,7 +384,7 @@ export class WEQ8Runtime {
   }
 
   private getNextInChain(idx: number): AudioNode {
-    let next = this.output,
+    let next = this.volumeNode,
       nextIndex: number = this.spec.length;
     for (let filter of this.filterbank) {
       if (filter.idx > idx && filter.idx < nextIndex) {

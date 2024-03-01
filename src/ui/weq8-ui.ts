@@ -19,8 +19,10 @@ import "./weq8-ui-filter-row";
 @customElement("weq8-ui")
 export class WEQ8UIElement extends LitElement {
   static styles = [sharedStyles, css`:host {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 60px 60spx 60px 60px;
+  
     height: 100%;
     align-items: stretch;
     gap: 10px;
@@ -83,6 +85,7 @@ export class WEQ8UIElement extends LitElement {
     border: 5px solid #373737;
     position: relative;
   }
+  
   .filters thead th.headerFilter { 
     position : relative;
     left: 10px;
@@ -574,17 +577,17 @@ resetEQ(){
                 </div>
                 ${this.view === "allBands" ? this.renderTable() : null}
             ` : ''}
-             <div class = "slider-container" >
-                <input type="range" min="-100" max="100" value="0" class="slider" @input=${this.handleSliderInput}>
-                <span id = "sliderValue">50</span>    
-           </div>
+             
+         <div class = "slider-container" >
+                 <input type="range" min="0" max="100" value="50" class="slider" @input=${this.handleSliderInput}>
+                 <span id = "sliderValue">50</span>    
+            </div>
+
 
         </div>
 
     `;
 }
-
-
 
 
 
@@ -684,41 +687,41 @@ resetEQ(){
 
 
    
-  // private renderFilterHandle(spec: WEQ8Filter, idx: number) {
-  //   if (!this.runtime) return;
-  //   let [x, y] = this.getFilterPositionInVisualisation(spec);
-  //   return html`<div
-  //     class="filter-handle-positioner"
-  //     style="transform: translate(${x}px,${y}px)"
-  //     @pointerdown=${(evt: PointerEvent) =>
-  //       this.startDraggingFilterHandle(evt, idx)}
-  //     @pointerup=${(evt: PointerEvent) =>
-  //       this.stopDraggingFilterHandle(evt, idx)}
-  //     @pointermove=${(evt: PointerEvent) => this.dragFilterHandle(evt, idx)}
-  //   >
-  //     <div
-  //       class="${classMap({
-  //         "filter-handle": true,
-  //         bypassed: spec.bypass,
-  //         selected: idx === this.selectedFilterIdx,
-  //       })}"
-  //     >
-  //       ${idx + 1}
-  //     </div>
-  //   </div>`;
-  // }
+  private renderFilterHandle(spec: WEQ8Filter, idx: number) {
+    if (!this.runtime) return;
+    let [x, y] = this.getFilterPositionInVisualisation(spec);
+    return html`<div
+      class="filter-handle-positioner"
+      style="transform: translate(${x}px,${y}px)"
+      @pointerdown=${(evt: PointerEvent) =>
+        this.startDraggingFilterHandle(evt, idx)}
+      @pointerup=${(evt: PointerEvent) =>
+        this.stopDraggingFilterHandle(evt, idx)}
+      @pointermove=${(evt: PointerEvent) => this.dragFilterHandle(evt, idx)}
+    >
+      <div
+        class="${classMap({
+          "filter-handle": true,
+          bypassed: spec.bypass,
+          selected: idx === this.selectedFilterIdx,
+        })}"
+      >
+        ${idx + 1}
+      </div>
+    </div>`;
+  }
     
 
 
 
 
  
-  private renderFilterHandle(spec: WEQ8Filter, idx: number) {
-   if (!this.runtime) return;
-  //  let [x, y] = this.getFilterPositionInVisualisation(spec);
-  //   return null;
+  // private renderFilterHandle(spec: WEQ8Filter, idx: number) {
+  //  if (!this.runtime) return;
+  // //  let [x, y] = this.getFilterPositionInVisualisation(spec);
+  // //   return null;
 
-  }
+  // }
 
 
 
@@ -791,11 +794,11 @@ handleSliderInput(event:Event) {
   const mapValueToDisplay = (value: number , in_min: number , in_max: number , out_min: number , out_max: number ) =>
   ((value - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 
-const displayValue = mapValueToDisplay(newValue, -100, 100, 0 ,100);
+const displayValue = mapValueToDisplay(newValue, 0, 100, 0 ,100);
 
   const sliderValueDisplay = this.shadowRoot?.querySelector('#sliderValue');
   if (sliderValueDisplay) {
-    sliderValueDisplay.textContent = displayValue.toFixed(0);
+    sliderValueDisplay.textContent = displayValue.toFixed();
   } else {
     console.warn('Slider value display element not found.');
   }
