@@ -1,31 +1,25 @@
 import { createNanoEvents, Emitter, Unsubscribe } from "nanoevents";
 import { WEQ8Spec, FilterType, DEFAULT_SPEC, FILTER_TYPES } from "./spec";
 import { getBiquadFilterOrder, getBiquadFilterType } from "./functions";
-import { state } from "lit/decorators";
 
 interface WEQ8Events {
   filtersChanged: (spec: WEQ8Spec) => void;
 
   volumeChanged: (level: number ) => void;
+
+  CompressorChanged: (value: number) => void;
   
 }
 export class WEQ8Runtime {
   public readonly input: AudioNode;
   private readonly output: AudioNode;
   private  volumeNode: GainNode;
-  private CompressorNode: DynamicsCompressorNode;
-  
-  
+  private Compressor: DynamicsCompressorNode;
+   isCompressorConnected: boolean;
 
   private filterbank: { idx: number; filters: BiquadFilterNode[] }[] = [];
 
   private readonly emitter: Emitter<WEQ8Events>;
-
-  private isCompressorConnected: boolean;
-
-  
-
-
 
   private DEFAULT_FIXED_SPEC:WEQ8Spec = [
     { type: "lowshelf12", frequency: 30, gain: 0, Q: 0.7, bypass: false },
@@ -74,7 +68,6 @@ export class WEQ8Runtime {
     "Soft Bass":{spec:this.SoftBass, isPreconfigured: true} }; 
 
   private presetNames: string[] = [ "Bass", "Voice", "Soft Bass"];
-  
 
   constructor(
     public readonly audioCtx: BaseAudioContext,
@@ -83,19 +76,19 @@ export class WEQ8Runtime {
   ) {
     this.input = audioCtx.createGain();
     this.output = audioCtx.createGain();
-    this.volumeNode = audioCtx.createGain();  
-    this.CompressorNode = audioCtx.createDynamicsCompressor(); 
+    this.volumeNode = audioCtx.createGain();
+    this.Compressor = audioCtx.createDynamicsCompressor();   
 
-    this.volumeNode.gain.value = 0;
-  
-    this.input.connect(this.volumeNode);
-    this.volumeNode.connect(this.output);
-  
+    this.isCompressorConnected = false;
+ 
+    
     this.buildFilterChain(spec);
     this.emitter = createNanoEvents();
-    this.isCompressorConnected = false;
 
-    this.setVolume(0.5);
+
+
+
+    this.setVolume(1);
   }
 
   connect(node: AudioNode): void {
@@ -107,9 +100,6 @@ export class WEQ8Runtime {
   connectInput(node: AudioNode): void{
     this.input.connect(node);
   }
-
-
-
 
 
   /*     */
@@ -132,43 +122,18 @@ export class WEQ8Runtime {
    this.emitter.emit("volumeChanged", level);
   }
 
-  getVolume():number{
-    return this.volumeNode.gain.value;
-  }
-
- 
-  toggleCompressorConnection() {
-     if(this.isCompressorConnected){
-      this.volumeNode.disconnect(this.CompressorNode);
-      this.CompressorNode.disconnect(this.output);
+  toggleCompressorConnection(): void {
+    if (this.isCompressorConnected) {
+      this.volumeNode.disconnect(this.Compressor);
+      this.Compressor.disconnect(this.output);
       this.volumeNode.connect(this.output);
-      this.isCompressorConnected = false; // Update flag
+      this.isCompressorConnected = false;
     } else {
-
-      /*  after EQ and volume*/ 
       this.volumeNode.disconnect(this.output);
-      this.volumeNode.connect(this.CompressorNode);
-
-       this.CompressorNode.threshold.setValueAtTime(-30, this.audioCtx.currentTime);
-       this.CompressorNode.knee.setValueAtTime(40, this.audioCtx.currentTime);
-       this.CompressorNode.ratio.setValueAtTime(0.5, this.audioCtx.currentTime);
-       this.CompressorNode.attack.setValueAtTime(0.1, this.audioCtx.currentTime);
-       this.CompressorNode.release.setValueAtTime(0.6, this.audioCtx.currentTime);
-      this.CompressorNode.connect(this.output);
-
-      this.isCompressorConnected = true; // Update flag
-
-     /* before EQ and volume */
-
-      
-
-     }
-
-  }
-
-
-  getCompressorState(): boolean {
-    return this.isCompressorConnected;
+      this.volumeNode.connect(this.Compressor);
+      this.Compressor.connect(this.output);
+      this.isCompressorConnected = true;
+    }
   }
 
 
@@ -305,8 +270,7 @@ export class WEQ8Runtime {
       }
     }
     this.emitter.emit("filtersChanged", this.spec);
-    console.log(this.volumeNode.gain.value);
-   
+  //  console.log(this.volumeNode.gain.value);
   }
 
   getFrequencyResponse(
@@ -347,9 +311,11 @@ export class WEQ8Runtime {
       );
       this.filterbank.push({ idx: i, filters });  
     }   
+
+
     if (this.filterbank.length === 0) {   
-    //  this.input.connect(this.output);  
-    this.input.connect(this.volumeNode);
+      this.input.connect(this.volumeNode);
+  
     } else {
       for (let i = 0; i < this.filterbank.length; i++) {
         let { filters } = this.filterbank[i];
@@ -364,16 +330,19 @@ export class WEQ8Runtime {
           filters[j].connect(filters[j + 1]);
         }
         if (i === this.filterbank.length - 1) {
-         // filters[filters.length - 1].connect(this.output);
-         filters[filters.length - 1].connect(this.volumeNode);
+          filters[filters.length - 1].connect(this.volumeNode);       
         }
+        
       }
     }
+       this.volumeNode.connect(this.output);
+
+       console.log("buildFilterChain is called");
   }
 
   private getPreviousInChain(idx: number): AudioNode {
     let prev = this.input,
-          prevIndex = -1;
+      prevIndex = -1;
     for (let filter of this.filterbank) {
       if (filter.idx < idx && filter.idx > prevIndex) {
         prev = filter.filters[filter.filters.length - 1];
@@ -395,9 +364,6 @@ export class WEQ8Runtime {
     return next;
   }
 
-
-
-  
 
 
   setFilterSpec(spec: WEQ8Spec)  {
@@ -442,10 +408,6 @@ export class WEQ8Runtime {
       throw new Error(`Preset "${name}" not found`);
      } 
 
-
-    // preset.forEach(filter => {
-    //   console.log(`Type: ${filter.type}, Frequency: ${filter.frequency}, Gain: ${filter.gain}, Q: ${filter.Q}`);
-    // });
     
     this.setFilterSpec(presetSpec);
    } 
@@ -481,9 +443,54 @@ export class WEQ8Runtime {
   
 
 
-  
+   setCompressorThreshold(value:number){
+       if(this.isCompressorConnected){
+     this.Compressor.threshold.setValueAtTime(value, this.audioCtx.currentTime);
+   } else {
+    return;
+   }
+   this.emitter.emit("CompressorChanged",value);
+  }
+
+   setCompressorAttack(value: number){
+    if(this.isCompressorConnected){
+      this.Compressor.attack.setValueAtTime(value, this.audioCtx.currentTime);
+    } else {
+    return;
+    }
+    this.emitter.emit("CompressorChanged",value);
+   }
+
+   setCompressorRatio(value: number){
+    if(this.isCompressorConnected){
+      this.Compressor.ratio.setValueAtTime(value, this.audioCtx.currentTime);
+    } else {
+    return;
+    }
+    this.emitter.emit("CompressorChanged",value);
+
+   }
 
 
+   VolumeNodeDisconnect(){
+    if(this.isCompressorConnected){
+      this.volumeNode.disconnect(this.Compressor)
+    } else {
+      this.volumeNode.disconnect(this.output);   
+    }
 
+    //this.emitter.emit("volumeChanged", this.volumeNode.gain.value);
+   }
+   
+   
+   VolumeNodeConnect(){
+    if(this.isCompressorConnected){
+      this.volumeNode.connect(this.Compressor)
+    } else {
+      this.volumeNode.connect(this.output);   
+    }
+
+   // this.emitter.emit("volumeChanged", this.volumeNode.gain.value);
+   }
 
 }

@@ -24,7 +24,8 @@ type DragState = {
   startValue: number;
 };
 
-const frequencyRange = {min: 20, max: 24000};
+
+const frequencyRange = {min: 20, max: 20000};
 const gainRange = {min: -15, max: 15};
 const qRange = {min:0.1, max: 18};
 
@@ -35,147 +36,136 @@ export class EQUIFilterRowElement extends LitElement {
   static styles = [
     sharedStyles,
     css`  
-      :host {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-columns: 80px 85px 85px 85px;
-        align-items: center;
-        gap: 90px;
-        background-color: transparent;
-        border-radius: 22px;
-        transition: background-color 0.15s  ease;
-        padding-left: 75px;
-      }
-      :host(.selected) {
-        background-color: #373737;
-      }
-      input,
-      select {
-        padding: 0;
-        border: 0;
-      }
-      input {
-        border-bottom: 1px solid transparent;
-        transition: border-color 0.15s ease;
-      }
-      input:focus,
-      input:active {
-        border-color: white;
-      }
-      .chip {
-        display: inline-grid;
-        grid-auto-flow: column;
-        gap: 3px;
-        height: 20px;
-        padding-right: 6px;
-        border-radius: 10px;
-        background: #373737;
-        transition: background-color 0.15s ease;
-      }
-      :host(.selected) .chip .filterNumber {
-        background: #ffcc00;
-      }
-      .chip.disabled:hover {
-        background: #44ffff;
-      }
-      .filterNumber {
-        cursor: pointer;
-        width: 20px;
-        height: 20px;
-        border-radius: 10px;
-        display: grid;
-        place-content: center;
-        background: white;
-        font-weight: var(--font-weight);
-        color: black;
-        transition: background-color 0.15s ease;
-      }
-      .chip.disabled .filterNumber {
-        background: transparent;
-        color: white;
-      }
-      .chip.bypassed .filterNumber {
-        background: #7d7d7d;
-        color: black;
-      }
-      .filterTypeSelect {
-        width: 30px;
-        appearance: none;
-        outline: none;
-        background-color: transparent;
-        color: white;
-        cursor: pointer;
-        text-align: center;
-        font-family: var(--font-stack);
-        font-size: var(--font-size);
-        font-weight: var(--font-weight);
-      }
-      .filterTypeSelect.bypassed {
-        color: #7d7d7d;
-      }
-      .chip.disabled .filterTypeSelect {
-        pointer-events: all;
-      }
-      .frequencyInput {
-        width: 28px;
-      }
-      .gainInput {
-        width: 26px;
-      }
-      .qInput {
-        width: 30px;
-      }
-      .numberInput {
-        appearance: none;
-        outline: none;
-        background-color: transparent;
-        color: white;
-        text-align: right;
-        -moz-appearance: textfield;
-        font-family: var(--font-stack);
-        font-size: var(--font-size);
-        font-weight: var(--font-weight);
-        touch-action: none;
-      }
-      .numberInput:disabled,
-      .disabled {
-        color: #7d7d7d;
-        pointer-events: none;
-      }
-      .bypassed {
-        color: #7d7d7d;
-      }
-      .numberInput::-webkit-inner-spin-button,
-      .numberInput::-webkit-outer-spin-button {
-        -webkit-appearance: none !important;
-        margin: 0 !important;
-      }
-
-
-
-
-      .knob {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: radial-gradient(circle at center, #e0e0e0 0%, #b0b0b0 70%, #909090 100%);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 -5px 15px rgba(255, 255, 255, 0.3);
-        position: relative;
-        cursor: pointer;
+    :host {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: 80px 85px 85px 85px;
+      align-items: center;
+      gap: 90px;
+      background-color: transparent;
+      border-radius: 22px;
+      transition: background-color 0.15s  ease;
+      padding-left: 75px;
     }
-    
-    .knob::before {
-        content: '';
-        position: absolute;
-        top: 5px;
-        left: 22.5px;
-        width: 5px;
-        height: 10px;
-        background-color: #757575; /* Adjusted to a shade of grey */
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    :host(.selected) {
+      background-color: #373737;
     }
-    
+    input,
+    select {
+      padding: 0;
+      border: 0;
+    }
+    input {
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s ease;
+    }
+    input:focus,
+    input:active {
+      border-color: white;
+    }
+    .chip {
+      grid-auto-flow: column;
+      gap: 3px;
+      height: 30px;  
+      width: 70px;  
+      padding-right: 6px;
+      border-radius: 5px; 
+      background: #536181;
+      transition: background-color 0.15s ease;
+    }
+    :host(.selected) .chip .filterNumber {
+      background: #3498db;
+    }
+    .chip.disabled:hover {
+      background: #44ffff;
+    }
+    .chip.disabled .filterNumber {
+      background: transparent;
+      color: white;
+    }
+    .chip.bypassed .filterNumber {
+      background: #7d7d7d;
+      color: black;
+    }
+    .filterTypeSelect {
+      height:30px;
+      width: 40px;
+      appearance: none;
+      outline: none;
+      background-color: #536181;
+      color: white;
+      cursor: pointer;
+      text-align: center;
+      font-family: var(--font-stack);
+      font-size: var(--font-size);
+      font-weight: var(--font-weight);
+    }
+    .filterTypeSelect.bypassed {
+      color: #7d7d7d;
+    }
+    .chip.disabled .filterTypeSelect {
+      pointer-events: all;
+    }
+    .frequencyInput {
+      width: 28px;
+    }
+    .gainInput {
+      width: 26px;
+    }
+    .qInput {
+      width: 30px;
+    }
+    .numberInput {
+      appearance: none;
+      outline: none;
+      background-color: transparent;
+      color: white;
+      text-align: right;
+      -moz-appearance: textfield;
+      font-family: var(--font-stack);
+      font-size: var(--font-size);
+      font-weight: var(--font-weight);
+      touch-action: none;
+    }
+    .numberInput:disabled,
+    .disabled {
+      color: #7d7d7d;
+      pointer-events: none;
+    }
+    .bypassed {
+      color: #7d7d7d;
+    }
+    .numberInput::-webkit-inner-spin-button,
+    .numberInput::-webkit-outer-spin-button {
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
+
+
+
+
+    .knob {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #e0e0e0 0%, #b0b0b0 70%, #909090 100%);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 -5px 15px rgba(255, 255, 255, 0.3);
+      position: relative;
+      cursor: pointer;
+  }
+  
+  .knob::before {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 22.5px;
+      width: 5px;
+      height: 10px;
+      background-color: #757575; 
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  }
+  
 
 
     `,
@@ -198,6 +188,9 @@ export class EQUIFilterRowElement extends LitElement {
 
   @property()
   index?: number;
+  
+  @property()
+  label?:string;
 
   @state()
   private frequencyInputFocused = false;
@@ -222,6 +215,7 @@ export class EQUIFilterRowElement extends LitElement {
 
     return html`
       <th>
+        <div class = "filter-label">${this.label} </div>
         <div
           class=${classMap({
             chip: true,
@@ -236,7 +230,7 @@ export class EQUIFilterRowElement extends LitElement {
         })}
         @click=${() => this.toggleBypass()}
       >
-        ${this.index + 1}
+       
       </div>
       <select
       class=${classMap({ filterTypeSelect: true, bypassed: spec.bypass })}
@@ -261,13 +255,16 @@ export class EQUIFilterRowElement extends LitElement {
           })}
           type="number"
           step="0.1"
+          min="20"
+          max="20000"
           lang="en_EN"
           .value=${formatFrequency(spec.frequency, this.frequencyInputFocused)}
           ?disabled=${!filterHasFrequency(spec.type)}
           @focus=${() => (this.frequencyInputFocused = true)}
           @blur=${() => {
             this.frequencyInputFocused = false;
-            this.setFilterFrequency(clamp(spec.frequency, 10, this.nyquist));
+          // this.setFilterFrequency(clamp(spec.frequency, 10, this.nyquist));
+            this.setFilterFrequency(clamp(spec.frequency, frequencyRange.min, frequencyRange.max));
           }}
         
         />
@@ -360,12 +357,11 @@ export class EQUIFilterRowElement extends LitElement {
       
     `;
   }
-
   
   
-  private get nyquist() {
-    return (this.runtime?.audioCtx.sampleRate ?? 48000) / 2;
-  }
+  // private get nyquist() {
+  //   return (this.runtime?.audioCtx.sampleRate ?? 48000) / 2;
+  // }
 
   private toggleBypass() {
     if (!this.runtime || this.index === undefined) return;
@@ -383,8 +379,8 @@ export class EQUIFilterRowElement extends LitElement {
   private setFilterFrequency(frequency: number) {
     if (!this.runtime || this.index === undefined) return;
     if (!isNaN(frequency)) {
-      this.runtime.setFilterFrequency(this.index, frequency);
-   //   this.frequencyToDegree(frequency);
+        this.runtime.setFilterFrequency(this.index, frequency);
+  
     }
   }
 
@@ -442,16 +438,17 @@ export class EQUIFilterRowElement extends LitElement {
       let yDelta = -(currentY - startY);
       let relYDelta = clamp(yDelta / 150, -1, 1);
       if (property === "frequency") {
-        let minFreq = 10;
-        let maxFreq = this.runtime.audioCtx.sampleRate / 2;
+        let minFreq = frequencyRange.min;
+       // let maxFreq = this.runtime.audioCtx.sampleRate / 2;
+        let maxFreq = frequencyRange.max;
         let startFreqLog = toLog10(dragState.startValue, minFreq, maxFreq);
         let newFreq = toLin(startFreqLog + relYDelta, minFreq, maxFreq);
         this.runtime.setFilterFrequency(this.index, newFreq);
       } else if (property === "gain") {
-        let gainDelta = relYDelta * 15;
+        let gainDelta = relYDelta * 20;
         this.runtime.setFilterGain(
           this.index,
-          clamp(dragState.startValue + gainDelta, -15, 15)
+          clamp(dragState.startValue + gainDelta, -20, 20)
         );
       } else if (property === "Q") {
         let minQ = 0.1;
@@ -471,7 +468,6 @@ export class EQUIFilterRowElement extends LitElement {
     }
 
     private frequencyToDegree(frequency: number): number {
-      console.log("called");
       return this.valueToDegree(frequency, frequencyRange.min, frequencyRange.max) - 125;
       
     }
